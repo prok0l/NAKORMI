@@ -7,4 +7,4 @@ from .models import Volunteer
 class VolunteerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Volunteer
-        fields = ["tg_id", "name", "email", "phone", "is_active"]
+        fields = ["tg_id", "name", "email", "phone", "image", "is_active", "is_admin"]

@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import RegexValidator
 from django.db import models
 
+from feed.models import Tag
+
 
 class Volunteer(models.Model):
     tg_id = models.IntegerField(unique=True, primary_key=True)
@@ -29,3 +31,9 @@ class Volunteer(models.Model):
 
     def __str__(self):
         return str(self.tg_id)
+
+
+class Inventory(models.Model):
+    tg_id = models.ForeignKey(Volunteer, on_delete=models.CASCADE)
+    tags = models.ManyToManyField(Tag)
+    volume = models.IntegerField(default=0)
