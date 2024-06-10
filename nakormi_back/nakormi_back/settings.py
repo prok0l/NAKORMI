@@ -37,6 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework_api_key',
+    'main',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +52,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework_api_key.permissions.HasAPIKey",
+    ]
+}
 
 ROOT_URLCONF = 'nakormi_back.urls'
 
@@ -120,4 +130,5 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
+# AUTH_USER_MODEL = 'user.User'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
