@@ -1,8 +1,7 @@
-from django.core.validators import RegexValidator
 from rest_framework import serializers
 
-
 from feed.models import Tag
+from point.models import Point
 from user.models import Volunteer
 
 
@@ -30,3 +29,9 @@ class UserField(serializers.RelatedField):
 class ReceptionSerializer(serializers.Serializer):
     tg_id = UserField(queryset=Volunteer.objects.all())
     content = serializers.ListField(child=ContentField())
+
+class PointSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Point
+        fields = '__all__'
+        extra_kwargs = {'photo':{'required':False}}

@@ -1,11 +1,13 @@
-from django.shortcuts import render
 
+from django.shortcuts import render
+from rest_framework import generics,mixins,viewsets
 from rest_framework.views import APIView
 from rest_framework_api_key.permissions import HasAPIKey
 from django.http import JsonResponse
 
 from user.models import Volunteer, Inventory
-from .serializers import ReceptionSerializer
+from .models import Point
+from .serializers import ReceptionSerializer, PointSerializer
 
 
 class TakeFeeds(APIView):
@@ -34,6 +36,13 @@ class TakeFeeds(APIView):
             invent.save()
 
         return JsonResponse(serializer.errors, safe=False)
+
+
+class PointView(mixins.CreateModelMixin,mixins.DestroyModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
+            viewsets.GenericViewSet):
+    permission_classes = [HasAPIKey]
+    serializer_class = PointSerializer
+    queryset = Point.objects.all()
 
 
 
