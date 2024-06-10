@@ -9,6 +9,9 @@ from user.models import Volunteer, Inventory
 from .models import Point
 from .serializers import ReceptionSerializer, PointSerializer
 
+from .models import Point
+from .map_generater import MapGeneration
+
 
 class TakeFeeds(APIView):
     permission_classes = [HasAPIKey]
@@ -44,5 +47,10 @@ class PointView(mixins.CreateModelMixin,mixins.DestroyModelMixin, mixins.ListMod
     serializer_class = PointSerializer
     queryset = Point.objects.all()
 
+
+def get_map(request, *args, **kwargs):
+    points = Point.objects.all()
+    map_path = MapGeneration(points).map
+    return render(request, template_name=map_path)
 
 
