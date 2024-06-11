@@ -5,11 +5,18 @@ from user.models import Volunteer
 class IsAdminOrReadOnly(BasePermission):
 
     def has_permission(self, request, view):
-        tg_id = request.data.get('tg_id')
 
-        user = Volunteer.objects.get(pk=tg_id)
-        return bool(request.method in SAFE_METHODS or bool(user.is_admin))
+        tg_id = request.data.get('tg_id')
+        if tg_id is None:
+            return False
+        else:
+            user = Volunteer.objects.get(pk=tg_id)
+            return bool(request.method in SAFE_METHODS or bool(user.is_admin))
+
     def has_object_permission(self, request, view, obj):
         tg_id = request.data.get('tg_id')
-        user = Volunteer.objects.get(pk=tg_id)
-        return bool(user.is_admin)
+        if tg_id is None:
+            return False
+        else:
+            user = Volunteer.objects.get(pk=tg_id)
+            return bool(user.is_admin)
