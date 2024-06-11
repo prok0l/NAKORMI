@@ -7,5 +7,5 @@ app_name = 'user'
 
 
 urlpatterns = [
-    path('update/<int:pk>', UpdateVolunteer.as_view(), name='Create Volunteer'),
+    path('edit/<int:pk>', VolunteerView.as_view(), name='Create Volunteer'),
 ]

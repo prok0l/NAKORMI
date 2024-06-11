@@ -7,7 +7,7 @@ from .serializers import VolunteerSerializer
 from .models import *
 
 
-class UpdateVolunteer(RetrieveUpdateAPIView):
+class VolunteerView(RetrieveUpdateAPIView):
     permission_classes = [HasAPIKey]
 
     queryset = Volunteer.objects.all()
