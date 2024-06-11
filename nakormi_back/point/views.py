@@ -12,6 +12,8 @@ from .serializers import ReceptionSerializer, PointSerializer
 from .models import Point
 from .map_generater import MapGeneration
 
+from main.permissions import IsAdminOrReadOnly
+
 
 class TakeFeeds(APIView):
     permission_classes = [HasAPIKey]
