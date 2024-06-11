@@ -7,13 +7,10 @@ services:
       - 8000:8000
     env_file:
       - ./nakormi_back/.env
-    environment:
-      - SERVER_ADDRESS=0.0.0.0
-      - SERVER_PORT=8000
-    entrypoint: ["python", "manage.py", "runserver"]
-    command: ["--p", $SERVER_PORT]
 
   bot:
     build: ./nakormi_bot
     container_name: nakormi-bot
     restart: always
+    env_file:
+      - ./nakormi_bot/.env
