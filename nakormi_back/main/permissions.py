@@ -1,11 +1,15 @@
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 from user.models import Volunteer
 
 
 class IsAdminOrReadOnly(BasePermission):
 
     def has_permission(self, request, view):
-        user = Volunteer.objects.filter(pk=request.data.get('tg_id'))
-        return bool(
-            user and user[0].is_admin
-        )
+        tg_id = request.data.get('tg_id')
+
+        user = Volunteer.objects.get(pk=tg_id)
+        return bool(request.method in SAFE_METHODS or bool(user.is_admin))
+    def has_object_permission(self, request, view, obj):
+        tg_id = request.data.get('tg_id')
+        user = Volunteer.objects.get(pk=tg_id)
+        return bool(user.is_admin)

@@ -1,5 +1,6 @@
 
 from django.shortcuts import render
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics,mixins,viewsets
 from rest_framework.views import APIView
 from rest_framework_api_key.permissions import HasAPIKey
@@ -45,9 +46,12 @@ class TakeFeeds(APIView):
 
 class PointView(mixins.CreateModelMixin,mixins.DestroyModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
             viewsets.GenericViewSet):
-    permission_classes = [HasAPIKey]
+    permission_classes = [HasAPIKey , IsAdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['city']
     serializer_class = PointSerializer
     queryset = Point.objects.all()
+
 
 
 def get_map(request, *args, **kwargs):

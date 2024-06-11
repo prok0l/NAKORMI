@@ -31,6 +31,7 @@ class ReceptionSerializer(serializers.Serializer):
     content = serializers.ListField(child=ContentField())
 
 class PointSerializer(serializers.ModelSerializer):
+    tg_id = serializers.IntegerField(required=True, write_only=True)
     class Meta:
         model = Point
         fields = '__all__'
