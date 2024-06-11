@@ -1,8 +1,22 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, EmailValidator
 from django.db import models
 
+from django.core.validators import EMPTY_VALUES
+from django.core.exceptions import ValidationError
+
 from feed.models import Tag
+
+
+def validate_unique_or_empty_email(value):
+    if value not in EMPTY_VALUES and Volunteer.objects.filter(email=value).exists():
+        raise ValidationError('This value is not unique.')
+
+
+def validate_unique_or_empty_phone(value):
+    print(value)
+    if value not in EMPTY_VALUES and Volunteer.objects.filter(email=value).exists():
+        raise ValidationError('This value is not unique.')
 
 
 class Volunteer(models.Model):
@@ -14,13 +28,16 @@ class Volunteer(models.Model):
                                     message="Имя не удовлетворяет требованиям"
                                 ),
                             ])
-    email = models.EmailField(unique=True, blank=True)
+    email = models.CharField(max_length=255, blank=True, unique=False, validators=[validate_unique_or_empty_email,
+                                                                                   EmailValidator
+                                                                                   ])
     phone = models.CharField(max_length=20, blank=True, null=True,
                              validators=[RegexValidator(
                                  regex=r'^\+[\d]+$',
                                  message="Телефон не удовлетворяет требованиям"
-                             )],
-                             unique=True)
+                             ),
+                                        validate_unique_or_empty_phone
+                             ])
     image = models.ImageField(upload_to="profile_images/", blank=True, null=True)
     passport = models.ImageField(upload_to="passport_images/", blank=True, null=True)
     is_active = models.BooleanField(default=False)
