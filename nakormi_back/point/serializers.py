@@ -30,9 +30,11 @@ class ReceptionSerializer(serializers.Serializer):
     tg_id = UserField(queryset=Volunteer.objects.all())
     content = serializers.ListField(child=ContentField())
 
+
 class PointSerializer(serializers.ModelSerializer):
     tg_id = serializers.IntegerField(required=True, write_only=True)
+
     class Meta:
         model = Point
         fields = '__all__'
-        extra_kwargs = {'photo':{'required':False}}
+        extra_kwargs = {'photo': {'required': False}}

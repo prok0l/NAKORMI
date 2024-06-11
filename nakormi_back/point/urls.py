@@ -4,8 +4,6 @@ from .views import *
 
 app_name = 'point'
 
-
-
 urlpatterns = [
     path('take/<int:point>', TakeFeeds.as_view(), name='Take feeds'),
     path('points/', PointView.as_view({'get': 'list', 'post': 'create', 'delete': 'destroy'})),

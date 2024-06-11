@@ -36,7 +36,7 @@ class Volunteer(models.Model):
                                  regex=r'^\+[\d]+$',
                                  message="Телефон не удовлетворяет требованиям"
                              ),
-                                        validate_unique_or_empty_phone
+                                 validate_unique_or_empty_phone
                              ])
     image = models.ImageField(upload_to="profile_images/", blank=True, null=True)
     passport = models.ImageField(upload_to="passport_images/", blank=True, null=True)

@@ -1,7 +1,7 @@
-
+from django.forms import model_to_dict
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics,mixins,viewsets
+from rest_framework import generics, mixins, viewsets
 from rest_framework.views import APIView
 from rest_framework_api_key.permissions import HasAPIKey
 from django.http import JsonResponse
@@ -27,15 +27,17 @@ class TakeFeeds(APIView):
 
         for feed in serializer.validated_data['content']:
             invent = Inventory.objects.filter(tg_id=serializer.validated_data['tg_id'],
-                                              tags__in=feed['tags'])
-            for tag in feed['tags']:
-                invent = invent.filter(tags__id=tag.id)
+                                              tags__in=feed['tags'][:1])
+            invent = list(set(x for x in invent if [item.get('id') for item in x.tags.values()] ==
+                         [x.id for x in feed['tags']]))
+            # for tag in feed['tags']:
+            #     invent = invent.filter(tags__id=tag.id)
             if invent:
                 invent = invent[0]
                 invent.volume = invent.volume + feed['volume']
             else:
                 invent = Inventory.objects.create(tg_id=serializer.validated_data['tg_id'],
-                                   volume=feed['volume'])
+                                                  volume=feed['volume'])
                 for tag in feed['tags']:
                     invent.tags.add(tag)
 
@@ -44,19 +46,17 @@ class TakeFeeds(APIView):
         return JsonResponse(serializer.errors, safe=False)
 
 
-class PointView(mixins.CreateModelMixin,mixins.DestroyModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
-            viewsets.GenericViewSet):
-    permission_classes = [HasAPIKey , IsAdminOrReadOnly]
+class PointView(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin,
+                mixins.UpdateModelMixin,
+                viewsets.GenericViewSet):
+    permission_classes = [HasAPIKey, IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['city']
     serializer_class = PointSerializer
     queryset = Point.objects.all()
 
 
-
 def get_map(request, *args, **kwargs):
     points = Point.objects.all()
     map_path = MapGeneration(points).map
     return render(request, template_name=map_path)
-
-
