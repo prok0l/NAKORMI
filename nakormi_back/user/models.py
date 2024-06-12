@@ -6,6 +6,7 @@ from django.core.validators import EMPTY_VALUES
 from django.core.exceptions import ValidationError
 
 from feed.models import Tag
+from main.models import District
 
 
 def validate_unique_or_empty_email(value):
@@ -42,12 +43,26 @@ class Volunteer(models.Model):
     passport = models.ImageField(upload_to="passport_images/", blank=True, null=True)
     is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+    is_warehouse = models.BooleanField(default=False)
+    district = models.ForeignKey(District, on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         db_table = "volunteers"
 
     def __str__(self):
         return str(self.tg_id)
+
+
+class Warehouse(models.Model):
+    name = models.CharField(max_length=255, blank=True)
+    user = models.ForeignKey(Volunteer, on_delete=models.CASCADE, blank=True, null=True)
+    info = models.CharField(max_length=255, blank=True, null=True)
+    lat = models.FloatField()
+    lon = models.FloatField()
+    address = models.CharField(max_length=255)
+
+    def __str__(self):
+        return str(self.address)
 
 
 class Inventory(models.Model):
