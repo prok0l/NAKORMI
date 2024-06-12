@@ -15,6 +15,7 @@ from .models import Point
 from .map_generater import MapGeneration
 
 from main.permissions import IsAdminOrReadOnly
+from .filters import PointFilter
 
 
 class TakeFeeds(APIView):
@@ -53,7 +54,7 @@ class PointView(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListMo
                 mixins.UpdateModelMixin,
                 viewsets.GenericViewSet):
     permission_classes = [HasAPIKey, IsAdminOrReadOnly]
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [PointFilter]
     filterset_fields = ['district__city', 'district__name']
     serializer_class = PointSerializer
     queryset = Point.objects.all()
