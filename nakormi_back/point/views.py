@@ -54,7 +54,7 @@ class PointView(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListMo
                 viewsets.GenericViewSet):
     permission_classes = [HasAPIKey, IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['city']
+    filterset_fields = ['district__city', 'district__name']
     serializer_class = PointSerializer
     queryset = Point.objects.all()
 

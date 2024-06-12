@@ -3,6 +3,7 @@ from rest_framework import serializers
 from feed.models import Tag
 from point.models import Point
 from user.models import Volunteer
+from main.models import District
 
 
 class TagField(serializers.RelatedField):

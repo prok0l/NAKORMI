@@ -5,7 +5,6 @@ from django.db import models
 from django.core.validators import EMPTY_VALUES
 from django.core.exceptions import ValidationError
 
-
 from main.models import District
 
 
@@ -15,7 +14,6 @@ def validate_unique_or_empty_email(value):
 
 
 def validate_unique_or_empty_phone(value):
-    print(value)
     if value not in EMPTY_VALUES and Volunteer.objects.filter(email=value).exists():
         raise ValidationError('This value is not unique.')
 
@@ -52,9 +50,11 @@ class Volunteer(models.Model):
     def __str__(self):
         return str(self.tg_id)
 
+
 class Tag(models.Model):
     name = models.CharField(max_length=100)
     level = models.IntegerField()
+
 
 class Warehouse(models.Model):
     name = models.CharField(max_length=255, blank=True)
@@ -65,11 +65,9 @@ class Warehouse(models.Model):
     address = models.CharField(max_length=255)
 
     def __str__(self):
-        return str(self.address)
-
-
-    def __str__(self):
         return self.name
+
+
 class Inventory(models.Model):
     tg_id = models.ForeignKey(Volunteer, on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag)
