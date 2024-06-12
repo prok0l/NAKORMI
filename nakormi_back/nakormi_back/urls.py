@@ -24,4 +24,6 @@ urlpatterns = [
                   path('api/user/', include('user.urls')),
                   path('api/feed/', include('feed.urls')),
                   path('api/point/', include('point.urls')),
+                  path('api/main/', include('main.urls')),
+                  # path('__debug__/', include('debug_toolbar.urls'))
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
