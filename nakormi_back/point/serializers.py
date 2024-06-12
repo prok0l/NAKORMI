@@ -37,4 +37,4 @@ class PointSerializer(serializers.ModelSerializer):
     class Meta:
         model = Point
         fields = '__all__'
-        extra_kwargs = {'photo': {'required': False}}
+

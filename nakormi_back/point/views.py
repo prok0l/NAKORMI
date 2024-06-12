@@ -6,7 +6,8 @@ from rest_framework.views import APIView
 from rest_framework_api_key.permissions import HasAPIKey
 from django.http import JsonResponse
 
-from user.models import Volunteer, Inventory, Warehouse
+from feed.serializers import ReportActionSerializer
+from user.models import Volunteer, Inventory
 from .models import Point
 from .serializers import ReceptionSerializer, PointSerializer
 
@@ -40,7 +41,9 @@ class TakeFeeds(APIView):
                                                   volume=feed['volume'])
                 for tag in feed['tags']:
                     invent.tags.add(tag)
-
+            report_action_serializer = ReportActionSerializer(data=request.data)
+            report_action_serializer.is_valid(raise_exception=True)
+            report_action_serializer.save()
             invent.save()
 
         return JsonResponse(serializer.errors, safe=False)
@@ -58,6 +61,5 @@ class PointView(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListMo
 
 def get_map(request, *args, **kwargs):
     points = Point.objects.all()
-    warehouses = Warehouse.objects.all()
-    map_path = MapGeneration(points=points, warehouses=warehouses).map
+    map_path = MapGeneration(points).map
     return render(request, template_name=map_path)

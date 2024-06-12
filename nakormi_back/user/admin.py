@@ -15,6 +15,9 @@ class InventoryAdmin(admin.ModelAdmin):
 
     def tags_list(self, obj):
         return ', '.join([related.name for related in obj.tags.all()])
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ("name", "level")
 
 
 @admin.register(Warehouse)
