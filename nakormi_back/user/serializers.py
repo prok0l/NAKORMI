@@ -21,4 +21,3 @@ class VolunteerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Volunteer
         fields = ["name", "email", "phone", "image", "is_active", "is_admin", "district"]
-

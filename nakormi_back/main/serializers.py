@@ -24,6 +24,9 @@ class UserField(serializers.RelatedField):
             raise serializers.ValidationError("User does not exist")
         return user[0]
 
+    def to_representation(self, value):
+        return value.tg_id
+
 
 class TgIdSerializer(serializers.Serializer):
     """Сереализатор получения Volunteer из Tg-Id в headers"""

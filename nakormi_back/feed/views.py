@@ -10,6 +10,8 @@ from .filters import TransferFilter, ReportFilter, TransferFilterSet, ReportFilt
 from .models import Tag, Report, Transfer
 from .serializers import TagSerializer, ReportSerializer, TransferSerializer
 
+from main.serializers import TgIdSerializer
+
 
 # Create your views here.
 
@@ -35,11 +37,14 @@ class ReportView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gene
     filterset_class = ReportFilterSet
 
     def get_queryset(self):
-        user = Volunteer.objects.get(tg_id=self.request.headers.get('Tg-Id'))
-        if user.is_admin:
+        user = TgIdSerializer(data=self.request.headers)
+
+        user.is_valid(raise_exception=True)
+        if user.data.get('tg_id').is_admin:
             return Report.objects.all()
         else:
-            return Report.objects.get(from_user__tg_id=user.tg_id) | Report.objects.get(to_user__tg_id=user.tg_id)
+            return Report.objects.get(from_user__tg_id=user.data.get('tg_id')) | Report.objects.get(
+                to_user__tg_id=user.data.get('tg_id'))
 
 
 class TransferView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -51,10 +56,10 @@ class TransferView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Ge
     filterset_class = TransferFilterSet
 
     def get_queryset(self):
-        user = Volunteer.objects.get(tg_id=self.request.headers.get('Tg-Id'))
+        user = TgIdSerializer(data=self.request.headers)
         queryset = Transfer.objects.all()
 
-        if not user.is_admin:
-            queryset = (queryset.filter(report__from_user__tg_id=user.tg_id) |
-                        queryset.filter(report__to_user__tg_id=user.tg_id))
+        user.is_valid(raise_exception=True)
+        queryset = (queryset.filter(report__from_user__tg_id=user.data.get('tg_id')) |
+                    queryset.filter(report__to_user__tg_id=user.data.get('tg_id')))
         return queryset

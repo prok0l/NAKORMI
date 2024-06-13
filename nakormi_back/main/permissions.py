@@ -19,4 +19,4 @@ class IsAdminOrReadOnly(BasePermission):
         if not tg_id.is_valid():
             return False
         else:
-            return bool(tg_id.validated_data.get('tg_id').is_admin)
+            return bool(request.method in SAFE_METHODS or bool(tg_id.validated_data.get('tg_id').is_admin))
