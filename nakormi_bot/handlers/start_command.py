@@ -25,7 +25,7 @@ async def start_command_handler(message: Message,
 
     # TODO: Возможно, стоит раскомментировать проверку на существование пользователя через бекенд
     # TODO: но пока что можно оставить и так, чтобы не нагружать
-    registered = 'registered' in data or backend.users.exists(message.from_user.id)
+    registered = 'registered' in data #or backend.users.exists(message.from_user.id)
 
     # Если предыдущее сообщение уже есть в диалоге
     if context.message_exists() and registered:
