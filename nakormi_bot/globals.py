@@ -17,7 +17,7 @@ async def run_app(bot_token: str, api_key: str):
     backend = Backend('http://localhost:8000/api/', api_key)
 
     # DI Dependencies
-    dp = Dispatcher(storage=storage, bot=bot)
+    dp = Dispatcher(storage=storage, bot=bot, backend=backend)
 
     dp.message.middleware(ThrottlingMiddleware(0.5))
     dp.message.middleware(LanguageMiddleware())
