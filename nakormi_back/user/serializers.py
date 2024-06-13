@@ -1,7 +1,7 @@
 from django.core.validators import RegexValidator
 from rest_framework import serializers
 
-from .models import Volunteer
+from .models import Volunteer, Inventory
 from main.models import District
 
 
@@ -21,3 +21,9 @@ class VolunteerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Volunteer
         fields = ["name", "email", "phone", "image", "is_active", "is_admin", "district"]
+
+
+class InventorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Inventory
+        fields = ('__all__')
