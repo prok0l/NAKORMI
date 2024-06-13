@@ -56,6 +56,9 @@ class Tag(models.Model):
     name = models.CharField(max_length=100)
     level = models.IntegerField()
 
+    def __str__(self):
+        return self.name
+
 
 class Warehouse(models.Model):
     name = models.CharField(max_length=255, blank=True)

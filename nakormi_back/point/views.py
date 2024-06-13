@@ -1,6 +1,4 @@
-from django.forms import model_to_dict
 from django.shortcuts import render
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, mixins, viewsets
 from rest_framework.views import APIView
 from rest_framework_api_key.permissions import HasAPIKey
@@ -8,7 +6,6 @@ from django.http import JsonResponse
 
 from feed.serializers import ReportActionSerializer
 from user.models import Volunteer, Inventory, Warehouse
-from .models import Point
 from .serializers import ReceptionSerializer, PointSerializer
 
 from .models import Point
@@ -55,6 +52,7 @@ class PointView(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListMo
                 viewsets.GenericViewSet):
     """Получение и создание точек (фильтры city, district)"""
     permission_classes = [HasAPIKey, IsAdminOrReadOnly]
+
     filter_backends = [PointFilter]
     serializer_class = PointSerializer
     queryset = Point.objects.all()
@@ -64,7 +62,6 @@ class PointView(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListMo
 
 def get_map(request, *args, **kwargs):
     """Получение карты"""
-    # TODO брать точки из Point View, чтобы фильтры работали
     points = Point.objects.all()
     warehouses = Warehouse.objects.all()
     map_path = MapGeneration(points=points, warehouses=warehouses).map

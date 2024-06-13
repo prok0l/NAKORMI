@@ -9,6 +9,9 @@ class Photo(models.Model):
 class Action(models.Model):
     name = models.CharField(max_length=70)
 
+    def __str__(self):
+        return self.name
+
 
 class District(models.Model):
     name = models.CharField(max_length=100)

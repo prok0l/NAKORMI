@@ -4,6 +4,8 @@ from rest_framework import status, mixins, viewsets
 from rest_framework.generics import UpdateAPIView, RetrieveUpdateAPIView
 from rest_framework.views import APIView
 from rest_framework_api_key.permissions import HasAPIKey
+
+from main.serializers import TgIdSerializer
 from .serializers import VolunteerSerializer, InventorySerializer
 from .models import *
 
@@ -23,16 +25,15 @@ class VolunteerView(RetrieveUpdateAPIView):
         data.data['is_active'] = True
         return data
 
+
 class InventoryView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     permission_classes = [HasAPIKey]
     serializer_class = InventorySerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['tg_id']
+
     def get_queryset(self):
-        user = Volunteer.objects.get(tg_id=self.request.headers.get('Tg-Id'))
-        queryset = Inventory.objects.all()
-
-        if not user.is_admin:
-            queryset = queryset.filter(tg_id=user.tg_id)
+        user = TgIdSerializer(data=self.request.headers)
+        user.is_valid(raise_exception=True)
+        queryset = Inventory.objects.filter(tg_id=user.validated_data['tg_id'])
         return queryset
-
