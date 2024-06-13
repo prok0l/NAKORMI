@@ -9,8 +9,9 @@ class TransferFilterSet(django_filters.FilterSet):
     class Meta:
         model = Transfer
         fields = {
-            'report__tg_id__tg_id': ['exact'],
-            'report__tg_id__district': ['exact'],
+            'report__from_user__tg_id': ['exact'],
+            'report__from_user__district': ['exact'],
+            'report__to_user__tg_id' : ['exact']
         }
 
 
@@ -25,9 +26,11 @@ class TransferFilter(DjangoFilterBackend):
         data = request.query_params.copy()
         filter_fields = {}
         if 'district' in data:
-            filter_fields['report__tg_id__district'] = data['district']
-        if 'tg_id' in data:
-            filter_fields['report__tg_id__tg_id'] = data['tg_id']
+            filter_fields['report__from_user__district'] = data['district']
+        if 'sender_tg_id' in data:
+            filter_fields['report__from_user'] = data['sender_tg_id']
+        if 'recipient_tg_id' in data:
+            filter_fields['report__to_user'] = data['recipient_tg_id']
 
         # Возвращаем инстанс фильтра
         return filterset_class(data=filter_fields, queryset=queryset, request=request)
@@ -36,8 +39,9 @@ class ReportFilterSet(django_filters.FilterSet):
     class Meta:
         model = Report
         fields = {
-            'tg_id__district': ['exact'],
-            'tg_id': ['exact'],
+            'from_user__district': ['exact'],
+            'from_user': ['exact'],
+            'to_user' : ['exact']
         }
 class ReportFilter(DjangoFilterBackend):
     def get_filterset(self, request, queryset, view):
@@ -50,9 +54,11 @@ class ReportFilter(DjangoFilterBackend):
         data = request.query_params.copy()
         filter_fields = {}
         if 'district' in data:
-            filter_fields['tg_id__district'] = data['district']
-        if 'tg_id' in data:
-            filter_fields['tg_id'] = data['tg_id']
+            filter_fields['from_user__district'] = data['district']
+        if 'sender_tg_id' in data:
+            filter_fields['from_user'] = data['sender_tg_id']
+        if 'recipient_tg_id' in data:
+            filter_fields['to_user'] = data['recipient_tg_id']
 
         # Возвращаем инстанс фильтра
         return filterset_class(data=filter_fields, queryset=queryset, request=request)
