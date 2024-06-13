@@ -1,7 +1,16 @@
 from django.contrib import admin
-from .models import Tag
+
+from feed.models import Transfer, Report
 
 
-@admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
-    list_display = ("name", "level")
+@admin.register(Transfer)
+class TransferAdmin(admin.ModelAdmin):
+    list_display = ('tags_list', 'report', 'volume')
+
+    def tags_list(self, obj):
+        return ', '.join([related.name for related in obj.tags.all()])
+
+
+@admin.register(Report)
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ('action', 'date', 'from_user', 'to_user', 'point')

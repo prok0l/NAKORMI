@@ -10,7 +10,6 @@ class Point(models.Model):
     lat = models.FloatField()
     lon = models.FloatField()
     photo = models.ImageField(upload_to="points", blank=True)
-    city = models.CharField(max_length=40)
     phone = models.CharField(max_length=20, blank=True, null=True,
                              validators=[RegexValidator(
                                  regex=r'^\+[\d]+$',

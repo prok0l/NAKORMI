@@ -5,5 +5,9 @@ from .views import *
 app_name = 'feed'
 
 urlpatterns = [
-    path('tags/<int:level>', GetTags.as_view(), name='Create Volunteer'),
+    path('tags/<int:level>', GetTags.as_view(), name='Create Tags'),
+    path('reports/', ReportView.as_view({'get':'list'})),
+    path('reports/<int:pk>', ReportView.as_view({'get':'retrieve'})),
+    path('transfer/', TransferView.as_view({'get':'list'})),
+    path('transfer/<int:pk>', TransferView.as_view({'get':'retrieve'}))
 ]
