@@ -5,13 +5,12 @@ from feed.models import Transfer, Report
 
 @admin.register(Transfer)
 class TransferAdmin(admin.ModelAdmin):
-    list_display = ('tags_list','report','volume')
+    list_display = ('tags_list', 'report', 'volume')
+
     def tags_list(self, obj):
         return ', '.join([related.name for related in obj.tags.all()])
 
+
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ('action','date','from_user','to_user')
-
-
-
+    list_display = ('action', 'date', 'from_user', 'to_user', 'point')

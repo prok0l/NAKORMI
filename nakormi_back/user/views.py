@@ -15,7 +15,9 @@ class VolunteerView(RetrieveUpdateAPIView):
     serializer_class = VolunteerSerializer
 
     def patch(self, request, *args, **kwargs):
+        data = super().patch(request, *args, **kwargs)
         instance = self.get_object()
         instance.is_active = True
         instance.save()
-        return super().patch(request, *args, **kwargs)
+        data.data['is_active'] = True
+        return data

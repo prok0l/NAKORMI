@@ -16,7 +16,7 @@ from .map_generater import MapGeneration
 
 from main.permissions import IsAdminOrReadOnly
 from main.serializers import TgIdSerializer
-from .filters import PointFilter
+from .filters import PointFilter, PointFilterSet
 
 
 class TakeFeeds(APIView):
@@ -33,14 +33,12 @@ class TakeFeeds(APIView):
             invent = Inventory.objects.filter(tg_id=user.validated_data['tg_id'],
                                               tags__in=feed['tags'][:1])
             invent = list(set(x for x in invent if [item.get('id') for item in x.tags.values()] ==
-                         [x.id for x in feed['tags']]))
-            # for tag in feed['tags']:
-            #     invent = invent.filter(tags__id=tag.id)
+                              [x.id for x in feed['tags']]))
             if invent:
                 invent = invent[0]
                 invent.volume = invent.volume + feed['volume']
             else:
-                invent = Inventory.objects.create(tg_id=serializer.validated_data['tg_id'],
+                invent = Inventory.objects.create(tg_id=user.validated_data['tg_id'],
                                                   volume=feed['volume'])
                 for tag in feed['tags']:
                     invent.tags.add(tag)
@@ -58,13 +56,15 @@ class PointView(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListMo
     """Получение и создание точек (фильтры city, district)"""
     permission_classes = [HasAPIKey, IsAdminOrReadOnly]
     filter_backends = [PointFilter]
-    filterset_fields = ['district__city', 'district__name']
     serializer_class = PointSerializer
     queryset = Point.objects.all()
+    filterset_fields = ['district__city', 'district__name']
+    filterset_class = PointFilterSet
 
 
 def get_map(request, *args, **kwargs):
     """Получение карты"""
+    # TODO брать точки из Point View, чтобы фильтры работали
     points = Point.objects.all()
     warehouses = Warehouse.objects.all()
     map_path = MapGeneration(points=points, warehouses=warehouses).map

@@ -15,9 +15,8 @@ class IsAdminOrReadOnly(BasePermission):
             return bool(request.method in SAFE_METHODS or bool(tg_id.validated_data.get('tg_id').is_admin))
 
     def has_object_permission(self, request, view, obj):
-        tg_id = TgIdSerializer(request.headers)
+        tg_id = TgIdSerializer(data=request.headers)
         if not tg_id.is_valid():
             return False
         else:
-            user = Volunteer.objects.get(pk=tg_id)
             return bool(tg_id.validated_data.get('tg_id').is_admin)

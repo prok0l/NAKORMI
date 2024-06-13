@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.core.validators import RegexValidator, EmailValidator
 from django.db import models
 
+
 from django.core.validators import EMPTY_VALUES
 from django.core.exceptions import ValidationError
 
