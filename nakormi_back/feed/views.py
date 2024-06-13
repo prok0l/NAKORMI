@@ -40,11 +40,11 @@ class ReportView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gene
         user = TgIdSerializer(data=self.request.headers)
 
         user.is_valid(raise_exception=True)
-        if user.data.get('tg_id').is_admin:
+        if user.validated_data.get('tg_id').is_admin:
             return Report.objects.all()
         else:
-            return Report.objects.get(from_user__tg_id=user.data.get('tg_id')) | Report.objects.get(
-                to_user__tg_id=user.data.get('tg_id'))
+            return Report.objects.get(from_user=user.validated_data.get('tg_id')) | Report.objects.get(
+                                      to_user=user.validated_data.get('tg_id'))
 
 
 class TransferView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -60,7 +60,7 @@ class TransferView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Ge
         queryset = Transfer.objects.all()
 
         user.is_valid(raise_exception=True)
-        if not user.data.get('tg_id').is_admin:
-            queryset = (queryset.filter(report__from_user__tg_id=user.data.get('tg_id')) |
-                        queryset.filter(report__to_user__tg_id=user.data.get('tg_id')))
+        if not user.validated_data.get('tg_id').is_admin:
+            queryset = (queryset.filter(report__from_user=user.validated_data.get('tg_id')) |
+                        queryset.filter(report__to_user=user.validated_data.get('tg_id')))
         return queryset
