@@ -20,9 +20,8 @@ class ReportActionSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         content = validated_data.pop('content')
         instance = self.Meta.model(**validated_data)
-        print(validated_data)
         instance.save()
-        for cont in content: #создание transfer, которые прикреплены к report
+        for cont in content:  # создание transfer, которые прикреплены к report
             transfer_serializer = TransferSerializer(
                 data={'report': instance.pk, 'tags': cont.get('tags'), 'volume': cont.get('volume')})
             transfer_serializer.is_valid(raise_exception=True)
@@ -31,7 +30,18 @@ class ReportActionSerializer(serializers.ModelSerializer):
         return instance
 
 
+class TagViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ('name', )
+
+    def to_representation(self, instance):
+        return instance.name
+
+
 class TransferSerializer(serializers.ModelSerializer):
+    tags = TagViewSerializer(many=True, read_only=True)
+
     class Meta:
         model = Transfer
         fields = '__all__'
@@ -42,4 +52,3 @@ class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
         fields = '__all__'
-

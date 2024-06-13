@@ -6,7 +6,7 @@ from .models import *
 @admin.register(Volunteer)
 class VolunteerAdmin(admin.ModelAdmin):
     form = VolunteerCreationForm
-    list_display = ("tg_id", "name", "email", "phone", "image", "is_active", "is_admin", "is_warehouse")
+    list_display = ("tg_id", "name", "email", "phone", "image", "is_active", "is_admin", "is_warehouse", "district")
 
 
 @admin.register(Inventory)
@@ -15,6 +15,7 @@ class InventoryAdmin(admin.ModelAdmin):
 
     def tags_list(self, obj):
         return ', '.join([related.name for related in obj.tags.all()])
+
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ("name", "level")
