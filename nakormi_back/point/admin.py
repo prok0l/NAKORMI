@@ -4,4 +4,4 @@ from .models import Point
 
 @admin.register(Point)
 class PointAdmin(admin.ModelAdmin):
-    list_display = ('name', 'address', 'photo')
+    list_display = ('name', 'address', 'photo','district')

@@ -16,6 +16,7 @@ class Report(models.Model):
     date = models.DateTimeField(default=datetime.datetime.now(), blank=True)
     action = models.ForeignKey(Action, on_delete=models.PROTECT)
     tg_id = models.ForeignKey('user.Volunteer', on_delete= models.PROTECT)
+    point = models.ForeignKey('point.Point', blank=True, on_delete=models.PROTECT, null = True)
 
 
 

@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from rest_framework_api_key.permissions import HasAPIKey
 
 from user.models import Volunteer
+from .filters import TransferFilter, ReportFilter, TransferFilterSet, ReportFilterSet
 from .models import Tag, Report, Transfer
 from .serializers import TagSerializer, ReportSerializer, TransferSerializer
 
@@ -26,10 +27,11 @@ class GetTags(APIView):
 class ReportView(mixins.ListModelMixin,mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = ReportSerializer
     permission_classes = [HasAPIKey]
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['tg_id']
+    filter_backends = [ReportFilter]
+    filterset_fields = ['tg_id','tg_id__district']
+    filterset_class = ReportFilterSet
     def get_queryset(self):
-        user =  Volunteer.objects.get(tg_id =self.request.data.get(['tg_id'][0]))
+        user =  Volunteer.objects.get(tg_id =self.request.headers.get('Tg-Id'))
         if user.is_admin:
             return  Report.objects.all()
         else:
@@ -38,10 +40,14 @@ class ReportView(mixins.ListModelMixin,mixins.RetrieveModelMixin, viewsets.Gener
 class TransferView(mixins.ListModelMixin,mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     serializer_class = TransferSerializer
     permission_classes = [HasAPIKey]
+    filter_backends = [TransferFilter]
+    filterset_fields = ['report__tg_id__tg_id', 'report__tg_id__district']
+    filterset_class = TransferFilterSet
     def get_queryset(self):
-        print(self.request.data)
-        user = Volunteer.objects.get(tg_id =self.request.data.get(['tg_id'][0]))
-        if user.is_admin:
-            return Transfer.objects.all()
-        else:
-            return Transfer.objects.get(tg_id=user.tg_id)
+        print(self.request.headers.get('Tg-Id'))
+        user = Volunteer.objects.get(tg_id =self.request.headers.get('Tg-Id'))
+        queryset = Transfer.objects.all()
+
+        if not user.is_admin:
+            queryset = queryset.filter(tg_id = user.tg_id)
+        return queryset

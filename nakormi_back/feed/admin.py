@@ -11,7 +11,7 @@ class TransferAdmin(admin.ModelAdmin):
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ('tg_id','action','date')
+    list_display = ('tg_id','action','date','tg_id')
 
 
 
