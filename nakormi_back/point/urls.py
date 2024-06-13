@@ -10,5 +10,5 @@ urlpatterns = [
     path('points/<int:pk>',
          PointView.as_view({'get': 'retrieve', 'put': 'update', 'patch': 'update', 'delete': 'destroy'})),
 
-    path('map', get_map, name='map'),
+    path('map/', get_map, name='map'),
 ]

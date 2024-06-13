@@ -31,7 +31,7 @@ class ReportView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gene
     serializer_class = ReportSerializer
     permission_classes = [HasAPIKey]
     filter_backends = [ReportFilter]
-    filterset_fields = ['tg_id', 'tg_id__district']
+    filterset_fields = ['from_user__district', 'from_user', 'to_user']
     filterset_class = ReportFilterSet
 
     def get_queryset(self):
@@ -39,7 +39,7 @@ class ReportView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gene
         if user.is_admin:
             return Report.objects.all()
         else:
-            return Report.objects.get(tg_id=user.tg_id)
+            return Report.objects.get(from_user__tg_id=user.tg_id) | Report.objects.get(to_user__tg_id=user.tg_id)
 
 
 class TransferView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -47,14 +47,14 @@ class TransferView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Ge
     serializer_class = TransferSerializer
     permission_classes = [HasAPIKey]
     filter_backends = [TransferFilter]
-    filterset_fields = ['report__tg_id__tg_id', 'report__tg_id__district']
+    filterset_fields = ['sender_tg_id', 'recipient_tg_id', 'report__from_user__district']
     filterset_class = TransferFilterSet
 
     def get_queryset(self):
-        print(self.request.headers.get('Tg-Id'))
         user = Volunteer.objects.get(tg_id=self.request.headers.get('Tg-Id'))
         queryset = Transfer.objects.all()
 
         if not user.is_admin:
-            queryset = queryset.filter(tg_id=user.tg_id)
+            queryset = (queryset.filter(report__from_user__tg_id=user.tg_id) |
+                        queryset.filter(report__to_user__tg_id=user.tg_id))
         return queryset
