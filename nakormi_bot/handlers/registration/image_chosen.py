@@ -46,11 +46,12 @@ async def image_chosen_handler(message: Message,
                                state: FSMContext,
                                context: CoreContext,
                                phrases: Phrases,
-                               bot: Bot):
+                               bot: Bot,
+                               backend: Backend):
     image_id = message.photo[-1].file_id
     await state.update_data(image=image_id)
 
-    await complete_registration(state, context, phrases, bot)
+    await complete_registration(state, context, phrases, bot, backend)
 
 
 @router.callback_query(F.data.startswith('skip_image'))
@@ -58,8 +59,9 @@ async def image_skip_handler(callback_query: CallbackQuery,
                              state: FSMContext,
                              context: CoreContext,
                              phrases: Phrases,
-                             bot: Bot):
-    await complete_registration(state, context, phrases, bot)
+                             bot: Bot,
+                             backend: Backend):
+    await complete_registration(state, context, phrases, bot, backend)
 
 
 @router.message(RegistrationState.waiting_for_image)
