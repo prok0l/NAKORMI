@@ -1,6 +1,7 @@
 from django.core.validators import RegexValidator
 from rest_framework import serializers
 
+from feed.serializers import TagViewSerializer
 from .models import Volunteer, Inventory
 from main.models import District
 
@@ -24,6 +25,7 @@ class VolunteerSerializer(serializers.ModelSerializer):
 
 
 class InventorySerializer(serializers.ModelSerializer):
+    tags = TagViewSerializer(many=True,read_only=True)
     class Meta:
         model = Inventory
         fields = ('__all__')
