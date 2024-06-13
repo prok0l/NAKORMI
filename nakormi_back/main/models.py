@@ -9,6 +9,7 @@ class Photo(models.Model):
 class Action(models.Model):
     name = models.CharField(max_length=70)
 
+
 class District(models.Model):
     name = models.CharField(max_length=100)
     city = models.CharField(max_length=40)

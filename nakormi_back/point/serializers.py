@@ -28,7 +28,6 @@ class UserField(serializers.RelatedField):
 
 
 class ReceptionSerializer(serializers.Serializer):
-    tg_id = UserField(queryset=Volunteer.objects.all())
     content = serializers.ListField(child=ContentField())
 
 

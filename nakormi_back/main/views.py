@@ -12,6 +12,7 @@ from rest_framework import mixins, viewsets
 
 # Create your views here.
 class PhotoView(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+    """Загрузка фотографии"""
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
 
@@ -19,6 +20,7 @@ class PhotoView(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.Generic
 class DistrictView(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin,
                    mixins.UpdateModelMixin,
                    viewsets.GenericViewSet):
+    """Просмотр, создание, редактирование округов"""
     permission_classes = [HasAPIKey, IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['city']

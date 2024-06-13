@@ -8,6 +8,7 @@ from .models import *
 
 
 class VolunteerView(RetrieveUpdateAPIView):
+    """Регистрация пользователя, необходимо указать pk (tg_id) в запросе"""
     permission_classes = [HasAPIKey]
 
     queryset = Volunteer.objects.all()
