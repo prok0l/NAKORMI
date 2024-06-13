@@ -60,6 +60,7 @@ class TransferView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Ge
         queryset = Transfer.objects.all()
 
         user.is_valid(raise_exception=True)
-        queryset = (queryset.filter(report__from_user__tg_id=user.data.get('tg_id')) |
-                    queryset.filter(report__to_user__tg_id=user.data.get('tg_id')))
+        if not user.data.get('tg_id').is_admin:
+            queryset = (queryset.filter(report__from_user__tg_id=user.data.get('tg_id')) |
+                        queryset.filter(report__to_user__tg_id=user.data.get('tg_id')))
         return queryset
