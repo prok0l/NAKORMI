@@ -1,0 +1,32 @@
+{
+  "language": {
+    "pick": "\uD83D\uDC47 Pick your native language",
+    "invalid": "❌ Seems that you entered an invalid language. Please tap the language button",
+    "picked": "✅ Language selected, now press /start to return to the menu"
+  },
+  "start_command": {
+    "first": "👋🏻 Hello! Let's get acquainted, what's your name?",
+    "second": "📝 Hello! This is the menu"
+  },
+  "registration": {
+    "name": {
+      "chosen": "✨ Great, {0}, now enter your phone number",
+      "invalid": "❌ It looks like you entered your name in the wrong format. Try again"
+    },
+    "phone": {
+      "chosen": "✨ Cool, now enter your email",
+      "invalid": "❌ It looks like you entered your number in the wrong format. Try again"
+    },
+    "email": {
+      "chosen": "✨ Okay, now send your avatar",
+      "invalid": "❌ It looks like you entered your email in the wrong format. Try again"
+    },
+    "image": {
+      "chosen": "\uD83D\uDD25 Cool, the registration is complete. Here are your entered details: \n\nName: {0}\nPhone number: {1}\nEmail: {2} \nAvatar: {3}",
+      "invalid": "❌ It looks like you sent your avatar in the wrong format. Try again"
+    }
+  },
+  "skip_button": "❌ Skip",
+  "return_to_menu": "🔙 Press /start to return to the menu",
+  "undefined_command": "😔 I don't understand you, use the /start command to return to the menu"
+}
