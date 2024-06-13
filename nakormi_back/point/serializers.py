@@ -19,20 +19,11 @@ class ContentField(serializers.Serializer):
     volume = serializers.IntegerField()
 
 
-class UserField(serializers.RelatedField):
-    def to_internal_value(self, data):
-        user = Volunteer.objects.filter(tg_id=data)
-        if not user:
-            raise serializers.ValidationError("User does not exist")
-        return user[0]
-
-
 class ReceptionSerializer(serializers.Serializer):
     content = serializers.ListField(child=ContentField())
 
 
 class PointSerializer(serializers.ModelSerializer):
-    tg_id = serializers.IntegerField(required=True, write_only=True)
 
     class Meta:
         model = Point

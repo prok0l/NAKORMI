@@ -7,7 +7,7 @@ from rest_framework_api_key.permissions import HasAPIKey
 from django.http import JsonResponse
 
 from feed.serializers import ReportActionSerializer
-from user.models import Volunteer, Inventory
+from user.models import Volunteer, Inventory, Warehouse
 from .models import Point
 from .serializers import ReceptionSerializer, PointSerializer
 
@@ -66,5 +66,6 @@ class PointView(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListMo
 def get_map(request, *args, **kwargs):
     """Получение карты"""
     points = Point.objects.all()
-    map_path = MapGeneration(points).map
+    warehouses = Warehouse.objects.all()
+    map_path = MapGeneration(points=points, warehouses=warehouses).map
     return render(request, template_name=map_path)
