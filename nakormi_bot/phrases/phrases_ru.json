@@ -55,7 +55,7 @@
     },
     "inventory": {
       "text": "Слот: \n",
-      "item": "{name} - {volume}\n"
+      "item": "корм {name} - {volume} кг\n"
     }
   },
   "skip_button": "❌ Пропустить",
