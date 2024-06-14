@@ -21,23 +21,9 @@ def validate_unique_or_empty_phone(value):
 
 class Volunteer(models.Model):
     tg_id = models.IntegerField(unique=True, primary_key=True)
-    name = models.CharField(max_length=255, blank=True, null=True,
-                            validators=[
-                                RegexValidator(
-                                    regex=r'^[А-ЯЁ][а-яё]* [А-ЯЁ][а-яё]* [А-ЯЁ][а-яё]*$',
-                                    message="Имя не удовлетворяет требованиям"
-                                ),
-                            ])
-    email = models.CharField(max_length=255, blank=True, unique=False, validators=[validate_unique_or_empty_email,
-                                                                                   EmailValidator
-                                                                                   ])
-    phone = models.CharField(max_length=20, blank=True, null=True,
-                             validators=[RegexValidator(
-                                 regex=r'^\+[\d]+$',
-                                 message="Телефон не удовлетворяет требованиям"
-                             ),
-                                 validate_unique_or_empty_phone
-                             ])
+    name = models.CharField(max_length=255, blank=True, null=True)
+    email = models.CharField(max_length=255, blank=True, unique=False)
+    phone = models.CharField(max_length=20, blank=True, null=True)
     image = models.ImageField(upload_to="profile_images/", blank=True, null=True)
     passport = models.ImageField(upload_to="passport_images/", blank=True, null=True)
     is_active = models.BooleanField(default=False)

@@ -1,3 +1,4 @@
+import asyncio
 from string import digits
 
 from aiogram import Router, F, Bot
@@ -212,13 +213,19 @@ async def stop_handler(callback_query: CallbackQuery,
                        bot: Bot,
                        backend: Backend):
     core_message = context.get_message()
-
     data = await state.get_data()
     content = data.get('content')
     from_user = core_message.telegram_id
     to_user = data['to_user']
 
-    # await backend.points.take(user_id=to_user, point_id=point, content=content)
+    res = await backend.users.share_feed(content=content, from_user=from_user, to_user=to_user)
+    text = phrases['share']['success']
+    if not res:
+        text = phrases['share']['errors']
+    await bot.edit_message_text(text,
+                                chat_id=core_message.chat_id,
+                                message_id=core_message.message_id)
+    await asyncio.sleep(2)
     await state.set_state(None)
     await to_main_handler(callback_query=callback_query, state=state,
                           context=context, phrases=phrases, bot=bot, backend=backend)

@@ -39,10 +39,11 @@ class TakeFeeds(APIView):
                                                   volume=feed['volume'])
                 for tag in feed['tags']:
                     invent.tags.add(tag)
-            report_action_serializer = ReportActionSerializer(data=request.data)
-            report_action_serializer.is_valid(raise_exception=True)
-            report_action_serializer.save()
             invent.save()
+
+        report_action_serializer = ReportActionSerializer(data=request.data)
+        report_action_serializer.is_valid(raise_exception=True)
+        report_action_serializer.save()
 
         return JsonResponse(serializer.errors, safe=False)
 

@@ -2,7 +2,7 @@ import datetime
 
 from django.db import models
 
-from main.models import Photo, Action
+from main.models import Photo, Action, District
 
 from user.models import Tag
 
@@ -18,6 +18,7 @@ class Report(models.Model):
     to_user = models.ForeignKey('user.Volunteer', on_delete=models.PROTECT, related_name='to_user', blank=True,
                                 null=True)
     point = models.ForeignKey('point.Point', blank=True, on_delete=models.PROTECT, null=True)
+    district = models.ForeignKey(District, on_delete=models.PROTECT, blank=True, null=True)
 
 
 class Transfer(models.Model):
