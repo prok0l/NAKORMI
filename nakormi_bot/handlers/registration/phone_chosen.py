@@ -3,6 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from nakormi_bot.filters.regex_match_filter import RegexMatchFilter
 from nakormi_bot.functional.core_context import CoreContext
 from nakormi_bot.functional.phrases import Phrases
 from nakormi_bot.handlers.registration.states.registration import RegistrationState
@@ -15,7 +16,8 @@ router = Router(name='phone_chosen')
 
 @router.message(RegistrationState.waiting_for_phone,
                 F.text.len() >= 11,
-                F.text.len() <= 15)
+                F.text.len() <= 15,
+                RegexMatchFilter(r'^\+\d{11}$'))
 async def phone_chosen_handler(message: Message,
                                state: FSMContext,
                                context: CoreContext,

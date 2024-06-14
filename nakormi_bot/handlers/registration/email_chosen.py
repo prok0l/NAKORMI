@@ -2,6 +2,7 @@ from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
+from nakormi_bot.filters.regex_match_filter import RegexMatchFilter
 from nakormi_bot.functional.core_context import CoreContext
 from nakormi_bot.functional.phrases import Phrases
 from nakormi_bot.handlers.registration.states.registration import RegistrationState
@@ -31,7 +32,8 @@ async def proceed_to_image(state: FSMContext,
 
 @router.message(RegistrationState.waiting_for_email,
                 F.text.len() >= 5,
-                F.text.len() <= 150)
+                F.text.len() <= 150,
+                RegexMatchFilter(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'))
 async def email_chosen_handler(message: Message,
                                state: FSMContext,
                                context: CoreContext,

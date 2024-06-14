@@ -4,6 +4,7 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 
+from nakormi_bot.filters.regex_match_filter import RegexMatchFilter
 from nakormi_bot.functional.core_context import CoreContext
 from nakormi_bot.functional.phrases import Phrases
 from nakormi_bot.handlers.registration.states.registration import RegistrationState
@@ -13,7 +14,8 @@ router = Router(name='name_chosen')
 
 @router.message(RegistrationState.waiting_for_name,
                 F.text.len() >= 3,
-                F.text.len() <= 150)
+                F.text.len() <= 150,
+                RegexMatchFilter(r'^[А-ЯЁ][а-яё]* [А-ЯЁ][а-яё]*$'))
 async def name_chosen_handler(message: Message,
                               state: FSMContext,
                               phrases: Phrases,
