@@ -2,9 +2,9 @@ from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from nakormi_bot.functional.core_context import CoreContext
-from nakormi_bot.functional.core_message import CoreMessage
-from nakormi_bot.functional.phrases import Phrases
+from functional.core_context import CoreContext
+from functional.core_message import CoreMessage
+from functional.phrases import Phrases
 
 router = Router(name='undefined_command')
 

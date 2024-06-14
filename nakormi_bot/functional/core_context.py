@@ -3,7 +3,7 @@ from typing import Dict, Any
 from aiogram import Bot
 from aiogram.fsm.context import FSMContext
 
-from nakormi_bot.functional.core_message import CoreMessage
+from functional.core_message import CoreMessage
 
 
 # TODO: Добавить cleanup_list для удаления предыдущих сообщений (например, если нужно несколько сообщений)

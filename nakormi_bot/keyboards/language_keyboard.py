@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from nakormi_bot.functional.phrases import Phrases
+from functional.phrases import Phrases
 
 
 def make_language_keyboard() -> InlineKeyboardBuilder:

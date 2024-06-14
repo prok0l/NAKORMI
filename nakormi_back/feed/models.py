@@ -11,7 +11,7 @@ from user.models import Tag
 
 
 class Report(models.Model):
-    date = models.DateTimeField(default=datetime.datetime.now(), blank=True)
+    date = models.DateTimeField(default=datetime.datetime.now, blank=True)
     action = models.ForeignKey(Action, on_delete=models.PROTECT)
     from_user = models.ForeignKey('user.Volunteer', on_delete=models.PROTECT, related_name='from_user', blank=True,
                                   null=True)

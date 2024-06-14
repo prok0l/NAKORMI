@@ -3,13 +3,13 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from nakormi_bot.filters.regex_match_filter import RegexMatchFilter
-from nakormi_bot.functional.core_context import CoreContext
-from nakormi_bot.functional.phrases import Phrases
-from nakormi_bot.handlers.registration.states.registration import RegistrationState
-from nakormi_bot.keyboards.skip_keyboard import make_skip_keyboard
+from filters.regex_match_filter import RegexMatchFilter
+from functional.core_context import CoreContext
+from functional.phrases import Phrases
+from handlers.registration.states.registration import RegistrationState
+from keyboards.skip_keyboard import make_skip_keyboard
 
-from nakormi_bot.services.api.backend import Backend
+from services.api.backend import Backend
 
 router = Router(name='phone_chosen')
 

@@ -5,18 +5,18 @@ from handlers import start_command
 from middlewares.single_message import SingleMessageMiddleware
 from middlewares.throttling import ThrottlingMiddleware
 
-from nakormi_bot.handlers import undefined_command
-from nakormi_bot.handlers.registration import name_chosen, phone_chosen, email_chosen, image_chosen, district_chosen
-from nakormi_bot.handlers.points import menu
-from nakormi_bot.handlers.share_feed import share
-from nakormi_bot.middlewares.language_middleware import LanguageMiddleware
-from nakormi_bot.services.api.backend import Backend
+from handlers import undefined_command
+from handlers.registration import name_chosen, phone_chosen, email_chosen, image_chosen, district_chosen
+from handlers.points import menu
+from handlers.share_feed import share
+from middlewares.language_middleware import LanguageMiddleware
+from services.api.backend import Backend
 
 
 async def run_app(bot_token: str, api_key: str, api_address: str):
     bot = Bot(token=bot_token)
     storage = MemoryStorage()
-    backend = Backend("http://127.0.0.1:8000/api", api_key, api_address)
+    backend = Backend("api", api_key, api_address)
 
     # DI Dependencies
     dp = Dispatcher(storage=storage, bot=bot, backend=backend)

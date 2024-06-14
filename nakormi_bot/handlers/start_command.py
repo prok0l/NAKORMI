@@ -3,15 +3,15 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
-from nakormi_bot.functional.core_context import CoreContext
-from nakormi_bot.functional.core_message import CoreMessage
-from nakormi_bot.functional.phrases import Phrases
-from nakormi_bot.functional.representate_user import represent_user
+from functional.core_context import CoreContext
+from functional.core_message import CoreMessage
+from functional.phrases import Phrases
+from functional.representate_user import represent_user
 
-from nakormi_bot.handlers.registration.states.registration import RegistrationState
-from nakormi_bot.keyboards.language_keyboard import make_language_keyboard
-from nakormi_bot.keyboards.main_menu_keyboard import main_menu_keyboard
-from nakormi_bot.services.api.backend import Backend
+from handlers.registration.states.registration import RegistrationState
+from keyboards.language_keyboard import make_language_keyboard
+from keyboards.main_menu_keyboard import main_menu_keyboard
+from services.api.backend import Backend
 
 router = Router(name='start_command')
 

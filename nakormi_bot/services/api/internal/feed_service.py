@@ -1,6 +1,6 @@
 from entities.tag import Tag
-from nakormi_bot.entities.user import User
-from nakormi_bot.services.common import BaseService
+from entities.user import User
+from services.common import BaseService
 import httpx
 
 

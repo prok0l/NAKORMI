@@ -2,10 +2,10 @@ from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
-from nakormi_bot.functional.core_context import CoreContext
-from nakormi_bot.functional.phrases import Phrases
-from nakormi_bot.handlers.registration.states.registration import RegistrationState
-from nakormi_bot.keyboards.skip_keyboard import make_skip_keyboard
+from functional.core_context import CoreContext
+from functional.phrases import Phrases
+from handlers.registration.states.registration import RegistrationState
+from keyboards.skip_keyboard import make_skip_keyboard
 
 router = Router(name='district_chosen')
 

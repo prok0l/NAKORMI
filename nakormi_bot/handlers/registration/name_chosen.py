@@ -4,10 +4,10 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 
-from nakormi_bot.filters.regex_match_filter import RegexMatchFilter
-from nakormi_bot.functional.core_context import CoreContext
-from nakormi_bot.functional.phrases import Phrases
-from nakormi_bot.handlers.registration.states.registration import RegistrationState
+from filters.regex_match_filter import RegexMatchFilter
+from functional.core_context import CoreContext
+from functional.phrases import Phrases
+from handlers.registration.states.registration import RegistrationState
 
 router = Router(name='name_chosen')
 

@@ -2,13 +2,13 @@ from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
-from nakormi_bot.entities.user import User
-from nakormi_bot.functional.core_context import CoreContext
-from nakormi_bot.functional.phrases import Phrases
-from nakormi_bot.functional.representate_user import represent_user
-from nakormi_bot.handlers.registration.states.registration import RegistrationState
-from nakormi_bot.services.api.backend import Backend
-from nakormi_bot.keyboards.main_menu_keyboard import main_menu_keyboard
+from entities.user import User
+from functional.core_context import CoreContext
+from functional.phrases import Phrases
+from functional.representate_user import represent_user
+from handlers.registration.states.registration import RegistrationState
+from services.api.backend import Backend
+from keyboards.main_menu_keyboard import main_menu_keyboard
 
 router = Router(name='image_chosen')
 

@@ -1,8 +1,8 @@
-from nakormi_bot.services.api.internal.user_service import UserService
-from nakormi_bot.services.api.internal.feed_service import FeedService
-from nakormi_bot.services.api.internal.main_service import MainService
-from nakormi_bot.services.api.internal.point_service import PointService
-from nakormi_bot.services.common import BaseService
+from services.api.internal.user_service import UserService
+from services.api.internal.feed_service import FeedService
+from services.api.internal.main_service import MainService
+from services.api.internal.point_service import PointService
+from services.common import BaseService
 
 
 class Backend(BaseService):

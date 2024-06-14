@@ -9,12 +9,12 @@ from entities.point import Point
 from functional.representate_point import represent_points
 from functional.representate_user import represent_user
 from keyboards.main_menu_keyboard import main_menu_keyboard
-from nakormi_bot.functional.core_context import CoreContext
-from nakormi_bot.functional.phrases import Phrases
+from functional.core_context import CoreContext
+from functional.phrases import Phrases
 
 from keyboards.point_keyboard import point_keyboard, is_done_keyboard
 from services.api.backend import Backend
-from nakormi_bot.handlers.points.state.point import PointState
+from handlers.points.state.point import PointState
 
 router = Router(name='point')
 
