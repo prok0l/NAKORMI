@@ -26,11 +26,11 @@ async def undefined_command_handler(message: Message,
 
         return
 
-    message = await message.answer(phrases['undefined_command'])
+    new_message = await message.answer(phrases['undefined_command'])
 
-    core_message = CoreMessage(chat_id=message.chat.id,
-                               message_id=message.message_id,
+    core_message = CoreMessage(chat_id=new_message.chat.id,
+                               message_id=new_message.message_id,
                                telegram_id=message.from_user.id,
-                               date=message.date)
+                               date=new_message.date)
 
     await context.update_message(core_message)

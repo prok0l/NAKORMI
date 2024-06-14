@@ -25,7 +25,7 @@ async def start_command_handler(message: Message,
 
     # TODO: Возможно, стоит раскомментировать проверку на существование пользователя через бекенд
     # TODO: но пока что можно оставить и так, чтобы не нагружать
-    registered = 'registered' in data #or backend.users.exists(message.from_user.id)
+    registered = 'registered' in data  #or backend.users.exists(message.from_user.id)
 
     # Если предыдущее сообщение уже есть в диалоге
     if context.message_exists() and registered:
@@ -39,13 +39,13 @@ async def start_command_handler(message: Message,
 
     if not context.language_defined():
         keyboard = make_language_keyboard()
-        message = await message.answer(phrases['language']['pick'],
-                                       reply_markup=keyboard.as_markup())
+        new_message = await message.answer(phrases['language']['pick'],
+                                           reply_markup=keyboard.as_markup())
 
-        core_message = CoreMessage(chat_id=message.chat.id,
-                                   message_id=message.message_id,
+        core_message = CoreMessage(chat_id=new_message.chat.id,
+                                   message_id=new_message.message_id,
                                    telegram_id=message.from_user.id,
-                                   date=message.date)
+                                   date=new_message.date)
 
         await context.update_message(core_message)
         await state.set_state(RegistrationState.waiting_for_language)

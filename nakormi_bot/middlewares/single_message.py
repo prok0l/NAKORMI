@@ -20,6 +20,7 @@ class SingleMessageMiddleware(BaseMiddleware):
         phrases: Phrases = data['phrases']
         context = await CoreContext.create(bot, state)
         event_instance = event
+        user_id = event.from_user.id
 
         # Add context to DI container
         data['context'] = context
@@ -37,7 +38,7 @@ class SingleMessageMiddleware(BaseMiddleware):
             if (event_instance.date - core_message.date).total_seconds() > 2 * 24 * 60 * 60:
                 await bot.delete_message(chat_id=core_message.chat_id, message_id=core_message.message_id)
 
-                await self.send_revert_state_message(state, bot, event_instance, context, phrases)
+                await self.send_revert_state_message(state, bot, event_instance, context, phrases, user_id)
 
         # Удаление сообщения пользователя
         if not event_is_callback:
@@ -50,14 +51,15 @@ class SingleMessageMiddleware(BaseMiddleware):
                                         bot: Bot,
                                         event: Message,
                                         context: CoreContext,
-                                        phrases: Phrases):
+                                        phrases: Phrases,
+                                        user_id: int) -> None:
         await state.set_state(None)
 
         new_message = await bot.send_message(event.chat.id, phrases['return_to_menu'])
 
         core_message = CoreMessage(new_message.chat.id,
                                    new_message.message_id,
-                                   new_message.from_user.id,
+                                   user_id,
                                    new_message.date)
 
         await context.update_message(core_message)
