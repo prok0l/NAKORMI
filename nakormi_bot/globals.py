@@ -14,7 +14,7 @@ from nakormi_bot.services.api.backend import Backend
 async def run_app(bot_token: str, api_key: str):
     bot = Bot(token=bot_token)
     storage = MemoryStorage()
-    backend = Backend('http://localhost:8000/api/', api_key)
+    backend = Backend('http://localhost:8000/api', api_key)
 
     # DI Dependencies
     dp = Dispatcher(storage=storage, bot=bot, backend=backend)
