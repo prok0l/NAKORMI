@@ -2,7 +2,7 @@ from string import digits
 
 from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, InlineKeyboardButton
+from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, WebAppInfo
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from entities.point import Point
@@ -24,10 +24,11 @@ async def point_menu_handler(callback_query: CallbackQuery,
                              state: FSMContext,
                              context: CoreContext,
                              phrases: Phrases,
-                             bot: Bot):
+                             bot: Bot,
+                             backend: Backend):
     core_message = context.get_message()
 
-    keyboard = point_keyboard()
+    keyboard = point_keyboard(backend)
     await bot.edit_message_text(phrases['point']['menu'],
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
@@ -40,13 +41,19 @@ async def view_map_handler(callback_query: CallbackQuery,
                            state: FSMContext,
                            context: CoreContext,
                            phrases: Phrases,
-                           bot: Bot):
+                           bot: Bot,
+                           backend: Backend):
     core_message = context.get_message()
-    # TODO добавить отображение карты
+
+    keyboard = point_keyboard(backend)
+    await bot.edit_message_text(phrases['point']['map'].format(url=backend.points.map),
+                                chat_id=core_message.chat_id,
+                                message_id=core_message.message_id,
+                                reply_markup=keyboard.as_markup())
 
 
 @router.callback_query(F.data.startswith('menu'))
-async def view_map_handler(callback_query: CallbackQuery,
+async def to_main_handler(callback_query: CallbackQuery,
                            state: FSMContext,
                            context: CoreContext,
                            phrases: Phrases,
@@ -105,8 +112,7 @@ async def select_point_handler(message: Message,
     point = data['points'][num - 1]
     await state.update_data(point=point)
 
-    tags = await backend.feed.tags(user_id=core_message.telegram_id,
-                                   level=1)
+    tags = await backend.feed.tags(user_id=core_message.telegram_id, level=1)
 
     await state.update_data(tag_db=tags)
     keyboard = InlineKeyboardBuilder()
@@ -241,4 +247,20 @@ async def stop_handler(callback_query: CallbackQuery,
                        phrases: Phrases,
                        bot: Bot,
                        backend: Backend):
-    pass
+    core_message = context.get_message()
+
+    data = await state.get_data()
+    content = data.get('content')
+    to_user = core_message.telegram_id
+    point = data['point'].id
+
+    await state.update_data(tags=[])
+    await state.update_data(content=[])
+    await state.update_data(tags_values=[])
+    await state.update_data(point=None)
+
+    await backend.points.take(user_id=to_user, point_id=point, content=content)
+    await state.set_state(None)
+    await to_main_handler(callback_query=callback_query, state=state,
+                          context=context, phrases=phrases, bot=bot, backend=backend)
+

@@ -1,12 +1,17 @@
-from aiogram.types import InlineKeyboardButton
+from aiogram.types import InlineKeyboardButton, WebAppInfo
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from services.api.backend import Backend
 
-def point_keyboard() -> InlineKeyboardBuilder:
+
+def point_keyboard(backend: Backend) -> InlineKeyboardBuilder:
     builder = InlineKeyboardBuilder()
 
     builder.row(InlineKeyboardButton(text='Вернуться назад',
                                      callback_data='menu'))
+
+    # builder.row(InlineKeyboardButton(text='Открыть карту',
+    #                                  web_app=WebAppInfo(url=backend.points.map)))
 
     builder.row(InlineKeyboardButton(text='Открыть карту',
                                      callback_data='map'))

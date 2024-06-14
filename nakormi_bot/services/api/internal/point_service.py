@@ -15,3 +15,17 @@ class PointService(BaseService):
             response = await client.get(f'{self.address}/points/',
                                         headers=headers)
             return response.json()
+
+    async def take(self, user_id: int, point_id: int, content: dict):
+        headers = self.headers
+        headers['Tg-Id'] = str(user_id)
+
+        async with httpx.AsyncClient() as client:
+            body = {"content": content, "action": 1, "to_user": user_id, "point": point_id}
+            response = await client.post(f'{self.address}/take/{point_id}',
+                                        headers=headers, json=body)
+            return response.status_code == 200
+
+    @property
+    def map(self):
+        return f'{self.address}/map/'
