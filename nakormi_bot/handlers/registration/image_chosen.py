@@ -36,7 +36,7 @@ async def complete_registration(state: FSMContext,
                                       district=district))
 
     user = await backend.users.get(user_id=core_message.telegram_id)
-    keyboard = main_menu_keyboard()
+    keyboard = main_menu_keyboard(user)
     msg_text = phrases['registration']['image']['chosen'] + represent_user(user=user, inventory=list(), phrase=phrases)
     await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,

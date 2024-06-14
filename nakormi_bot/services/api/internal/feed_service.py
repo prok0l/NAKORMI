@@ -5,8 +5,8 @@ import httpx
 
 
 class FeedService(BaseService):
-    def __init__(self, address: str, api_key: str):
-        super().__init__(address, api_key)
+    def __init__(self, address: str, api_key: str, site_address):
+        super().__init__(address, api_key, site_address)
 
     async def tags(self, user_id: int, level: int):
         headers = self.headers

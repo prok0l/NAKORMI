@@ -5,22 +5,19 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from entities.point import Point
-from functional.representate_point import represent_points
-from functional.representate_user import represent_user
-from keyboards.main_menu_keyboard import main_menu_keyboard
-from nakormi_bot.functional.core_context import CoreContext
-from nakormi_bot.functional.phrases import Phrases
-
-from keyboards.point_keyboard import point_keyboard, is_done_keyboard
+from functional.core_context import CoreContext
+from functional.phrases import Phrases
+from handlers.points.menu import to_main_handler
+from keyboards.feed_keyboard import is_done_keyboard
 from services.api.backend import Backend
-from nakormi_bot.handlers.points.state.point import PointState
 
-router = Router(name='point')
+from handlers.share_feed.state.share import ShareState
+
+router = Router(name='share')
 
 
-@router.callback_query(F.data.startswith('point'))
-async def point_menu_handler(callback_query: CallbackQuery,
+@router.callback_query(F.data.startswith('share_feed'))
+async def share_feed_handler(callback_query: CallbackQuery,
                              state: FSMContext,
                              context: CoreContext,
                              phrases: Phrases,
@@ -28,93 +25,36 @@ async def point_menu_handler(callback_query: CallbackQuery,
                              backend: Backend):
     core_message = context.get_message()
 
-    keyboard = point_keyboard(backend)
-    await bot.edit_message_text(phrases['point']['menu'],
-                                chat_id=core_message.chat_id,
-                                message_id=core_message.message_id,
-                                reply_markup=keyboard.as_markup())
-    await state.set_state(PointState.waiting_for_action)
-
-
-@router.callback_query(F.data.startswith('map'))
-async def view_map_handler(callback_query: CallbackQuery,
-                           state: FSMContext,
-                           context: CoreContext,
-                           phrases: Phrases,
-                           bot: Bot,
-                           backend: Backend):
-    core_message = context.get_message()
-
-    keyboard = point_keyboard(backend)
-    await bot.edit_message_text(phrases['point']['map'].format(url=backend.points.map),
-                                chat_id=core_message.chat_id,
-                                message_id=core_message.message_id,
-                                reply_markup=keyboard.as_markup())
-
-
-@router.callback_query(F.data.startswith('menu'))
-async def to_main_handler(callback_query: CallbackQuery,
-                          state: FSMContext,
-                          context: CoreContext,
-                          phrases: Phrases,
-                          bot: Bot,
-                          backend: Backend):
-    core_message = context.get_message()
-
-    inventory = await backend.users.inventory(core_message.telegram_id)
-    user = await backend.users.get(core_message.telegram_id)
-    keyboard = main_menu_keyboard(user)
-    await bot.edit_message_text(represent_user(user=user, inventory=inventory, phrase=phrases),
-                                chat_id=core_message.chat_id,
-                                message_id=core_message.message_id,
-                                reply_markup=keyboard.as_markup()
-                                )
-    return
-
-
-@router.callback_query(F.data.startswith('take_feed'))
-async def take_feed_handler(callback_query: CallbackQuery,
-                            state: FSMContext,
-                            context: CoreContext,
-                            phrases: Phrases,
-                            bot: Bot,
-                            backend: Backend):
-    core_message = context.get_message()
-    points = [Point(**item) for item in await backend.points.get_points(user_id=core_message.telegram_id)]
-    await state.update_data(points=points)
-
-    msg_text = phrases['point']['points_list'] + represent_points(points=points, phrase=phrases)
-    await bot.edit_message_text(msg_text,
+    await bot.edit_message_text(phrases['share']['tg_id']['start'],
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id)
-    await state.set_state(PointState.waiting_for_point_num)
+    await state.set_state(ShareState.waiting_for_tg_id)
+    inventory = await backend.users.inventory(user_id=core_message.telegram_id)
+
+    await state.update_data(inventory=inventory)
     await state.update_data(tags=[])
     await state.update_data(content=[])
     await state.update_data(tags_values=[])
     await state.update_data(point=None)
 
 
-@router.message(PointState.waiting_for_point_num)
-async def select_point_handler(message: Message,
-                               state: FSMContext,
-                               context: CoreContext,
-                               phrases: Phrases,
-                               bot: Bot,
-                               backend: Backend):
+@router.message(ShareState.waiting_for_tg_id)
+async def input_tg_id_handler(message: Message,
+                              state: FSMContext,
+                              context: CoreContext,
+                              bot: Bot,
+                              phrases: Phrases,
+                              backend: Backend):
     core_message = context.get_message()
-
-    num = message.text
-    data = await state.get_data()
-    if not set(num) <= set(digits) or not (1 <= (num := int(num)) <= len(data.get('points'))):
-        msg_text = (phrases['point']['select']['invalid'] + phrases['point']['points_list']
-                    + represent_points(points=data.get('points'), phrase=phrases))
-        await bot.edit_message_text(msg_text,
+    id = message.text
+    if not set(id) <= set(digits) or not await backend.users.check(user_id=core_message.telegram_id, searched_user=id):
+        await bot.edit_message_text(phrases['share']['tg_id']['invalid'],
                                     chat_id=core_message.chat_id,
                                     message_id=core_message.message_id)
         return
 
-    point = data['points'][num - 1]
-    await state.update_data(point=point)
+    await state.update_data(to_user=int(id))
+    await state.set_state(ShareState.waiting_for_tags)
 
     tags = await backend.feed.tags(user_id=core_message.telegram_id, level=1)
 
@@ -123,17 +63,16 @@ async def select_point_handler(message: Message,
     for item in tags:
         keyboard.row(InlineKeyboardButton(text=item.name,
                                           callback_data=str(item.id)))
-    await bot.edit_message_text(phrases['point']['tags'],
+
+    await bot.edit_message_text(phrases['share']['to_user'].format(id=id) + phrases['share']['tags'],
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
                                 reply_markup=keyboard.as_markup())
-
-    await state.set_state(PointState.waiting_for_tags)
     await state.update_data(tags=[])
     await state.update_data(tags_values=[])
 
 
-@router.callback_query(PointState.waiting_for_tags)
+@router.callback_query(ShareState.waiting_for_tags)
 async def tags_handler(callback_query: CallbackQuery,
                        state: FSMContext,
                        context: CoreContext,
@@ -153,7 +92,7 @@ async def tags_handler(callback_query: CallbackQuery,
     await state.update_data(tag_db=tags)
 
     if not tags:
-        await state.set_state(PointState.waiting_for_volume)
+        await state.set_state(ShareState.waiting_for_volume)
         await bot.edit_message_text(phrases['point']['number']['text'],
                                     chat_id=core_message.chat_id,
                                     message_id=core_message.message_id)
@@ -169,7 +108,7 @@ async def tags_handler(callback_query: CallbackQuery,
                                         reply_markup=keyboard.as_markup())
 
 
-@router.message(PointState.waiting_for_volume)
+@router.message(ShareState.waiting_for_volume)
 async def volume_handler(message: Message,
                          state: FSMContext,
                          context: CoreContext,
@@ -199,12 +138,25 @@ async def volume_handler(message: Message,
             ind = i
     if ind == -1:
         content = content + [{"tags": data['tags'], "volume": volume, "tags_values": data['tags_values']}]
-        await state.update_data(content=content)
     else:
         content[ind]["volume"] += volume
-        await state.update_data(content=content)
 
-    msg_text = phrases['point']['inventory']['text']
+    content_filtered = list()
+
+    inventory = data['inventory']
+    for i, item in enumerate(content):
+        if any([True if inv_obj.volume >= item['volume'] and inv_obj.tags == item['tags_values'] else False
+                for inv_obj in inventory]):
+            content_filtered.append(item)
+    msg_text = str()
+    if len(content_filtered) != len(content):
+        msg_text += phrases['share']['inventory']['invalid']
+
+    content = content_filtered
+    await state.update_data(content=content)
+    msg_text += phrases['share']['to_user'].format(id=data['to_user'])
+    if content:
+        msg_text += phrases['point']['inventory']['text']
 
     for item in content:
         msg_text += phrases['point']['inventory']['item'].format(
@@ -217,7 +169,7 @@ async def volume_handler(message: Message,
                                 reply_markup=keyboard.as_markup())
 
 
-@router.callback_query(F.data.startswith('again_point'))
+@router.callback_query(F.data.startswith('again_share'))
 async def again_handler(callback_query: CallbackQuery,
                         state: FSMContext,
                         context: CoreContext,
@@ -230,7 +182,8 @@ async def again_handler(callback_query: CallbackQuery,
     await state.update_data(tags=[])
     await state.update_data(tags_values=[])
 
-    msg_text = phrases['point']['tags'] + phrases['point']['inventory']['text']
+    msg_text = (phrases['share']['to_user'].format(id=data['to_user']) +
+                phrases['share']['tags'] + phrases['point']['inventory']['text'])
 
     for item in data['content']:
         msg_text += phrases['point']['inventory']['item'].format(
@@ -243,7 +196,7 @@ async def again_handler(callback_query: CallbackQuery,
         keyboard.row(InlineKeyboardButton(text=item.name,
                                           callback_data=str(item.id)))
 
-    await state.set_state(PointState.waiting_for_tags)
+    await state.set_state(ShareState.waiting_for_tags)
 
     await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,
@@ -251,7 +204,7 @@ async def again_handler(callback_query: CallbackQuery,
                                 reply_markup=keyboard.as_markup())
 
 
-@router.callback_query(F.data.startswith('stop_point'))
+@router.callback_query(F.data.startswith('stop_share'))
 async def stop_handler(callback_query: CallbackQuery,
                        state: FSMContext,
                        context: CoreContext,
@@ -262,10 +215,10 @@ async def stop_handler(callback_query: CallbackQuery,
 
     data = await state.get_data()
     content = data.get('content')
-    to_user = core_message.telegram_id
-    point = data['point'].id
+    from_user = core_message.telegram_id
+    to_user = data['to_user']
 
-    await backend.points.take(user_id=to_user, point_id=point, content=content)
+    # await backend.points.take(user_id=to_user, point_id=point, content=content)
     await state.set_state(None)
     await to_main_handler(callback_query=callback_query, state=state,
                           context=context, phrases=phrases, bot=bot, backend=backend)

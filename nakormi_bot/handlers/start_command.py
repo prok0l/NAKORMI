@@ -63,7 +63,7 @@ async def start_command_handler(message: Message,
     user = await backend.users.get(message.chat.id)
     if user.is_active:
         inventory = await backend.users.inventory(message.chat.id)
-        keyboard = main_menu_keyboard()
+        keyboard = main_menu_keyboard(user)
         await bot.edit_message_text(represent_user(user=user, inventory=inventory, phrase=phrases),
                                     chat_id=core_message.chat_id,
                                     message_id=core_message.message_id,

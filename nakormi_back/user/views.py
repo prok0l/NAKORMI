@@ -37,3 +37,15 @@ class InventoryView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.G
         user.is_valid(raise_exception=True)
         queryset = Inventory.objects.filter(tg_id=user.validated_data['tg_id'])
         return queryset
+
+
+class CheckUserView(APIView):
+    permission_classes = [HasAPIKey]
+
+    def get(self, request, pk, *args, **kwargs):
+        print(pk)
+        user = Volunteer.objects.filter(tg_id=pk)
+        if user:
+            return JsonResponse({}, status=status.HTTP_200_OK, safe=False)
+        else:
+            return JsonResponse({}, status=status.HTTP_404_NOT_FOUND, safe=False)

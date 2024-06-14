@@ -26,8 +26,8 @@ def is_done_keyboard() -> InlineKeyboardBuilder:
     builder = InlineKeyboardBuilder()
 
     builder.row(InlineKeyboardButton(text='Добавить ещё',
-                                     callback_data='again'))
+                                     callback_data='again_point'))
 
     builder.row(InlineKeyboardButton(text='Готово',
-                                     callback_data='stop'))
+                                     callback_data='stop_point'))
     return builder
