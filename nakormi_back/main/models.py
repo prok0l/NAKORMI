@@ -5,6 +5,11 @@ from django.db import models
 class Photo(models.Model):
     photo = models.ImageField(upload_to='images/')
 
+    objects = models.Manager()
+
+    def get_photo (self):
+        return self.pk
+
 
 class Action(models.Model):
     name = models.CharField(max_length=70)

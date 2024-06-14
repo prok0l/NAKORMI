@@ -11,10 +11,15 @@ class DistrictSerializer(serializers.ModelSerializer):
 
 
 class PhotoSerializer(serializers.ModelSerializer):
-    photo_list = serializers.ListField()
-
+    photo = serializers.CharField(source='get_photo', read_only=True)
     class Meta:
         model = Photo
+        fields = '__all__'
+        extra_kwargs = {'id':{'read_only':True}}
+
+    def to_representation(self, instance):
+        return instance.image
+
 
 
 class UserField(serializers.RelatedField):
@@ -34,3 +39,5 @@ class TgIdSerializer(serializers.Serializer):
 
     class Meta:
         fields = ('tg_id', )
+
+

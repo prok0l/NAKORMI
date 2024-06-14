@@ -1,16 +1,15 @@
-from django.shortcuts import render
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.views import APIView
-from rest_framework import mixins, viewsets
 from django.http import JsonResponse
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import mixins, viewsets, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_api_key.permissions import HasAPIKey
 
-from user.models import Volunteer
-from .filters import TransferFilter, ReportFilter, TransferFilterSet, ReportFilterSet
-from .models import Tag, Report, Transfer
-from .serializers import TagSerializer, ReportSerializer, TransferSerializer
-
+from main.models import Photo
 from main.serializers import TgIdSerializer
+from .filters import TransferFilter, ReportFilter, TransferFilterSet, ReportFilterSet
+from .models import Tag, Report, Transfer, ReportPhoto
+from .serializers import TagSerializer, ReportSerializer, TransferSerializer, ReportPhotoSerializer
 
 
 # Create your views here.
@@ -44,7 +43,7 @@ class ReportView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gene
             return Report.objects.all()
         else:
             return Report.objects.get(from_user=user.validated_data.get('tg_id')) | Report.objects.get(
-                                      to_user=user.validated_data.get('tg_id'))
+                to_user=user.validated_data.get('tg_id'))
 
 
 class TransferView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -64,3 +63,38 @@ class TransferView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Ge
             queryset = (queryset.filter(report__from_user=user.validated_data.get('tg_id')) |
                         queryset.filter(report__to_user=user.validated_data.get('tg_id')))
         return queryset
+
+
+class ReportPhotoView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    serializer_class = ReportPhotoSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['report']
+    lookup_field = 'report'
+    def get_queryset(self):
+        user = TgIdSerializer(data=self.request.headers)
+        user.is_valid(raise_exception=True)
+        queryset = ReportPhoto.objects.all()
+        return queryset
+
+    def create(self, request, *args, **kwargs):
+        user = TgIdSerializer(data=self.request.headers)
+        user.is_valid()
+        from_user = Report.objects.get(pk=request.data.get('report')).from_user
+        if user.validated_data.get('tg_id') == from_user and  not (ReportPhoto.objects.filter(report = Report.objects.get(pk =request.data.get('report')))) :
+            uploaded_files = self.request.FILES.getlist('photo')
+            print(*uploaded_files)
+            photo_list = []
+            for file in uploaded_files:
+                print(file)
+                photo = Photo.objects.create(photo=file)
+                photo.save()
+                photo_list.append(photo)
+            print(photo_list)
+            serializer = self.get_serializer(data = {'report': request.data['report'], 'photo': photo_list})
+
+            print(request.data['report'])
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            print('serializer is_valid')
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from feed.models import Transfer, Report
+from feed.models import Transfer, Report, ReportPhoto
 
 
 @admin.register(Transfer)
@@ -13,4 +13,10 @@ class TransferAdmin(admin.ModelAdmin):
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ('action', 'date', 'from_user', 'to_user', 'point', 'district')
+    list_display = ('id','action', 'date', 'from_user', 'to_user', 'point')
+
+@admin.register(ReportPhoto)
+class ReportPhotoAdmin(admin.ModelAdmin):
+    list_display = ('report', 'photo_list')
+    def photo_list(self, obj):
+        return ', '.join([str(related.pk) for related in obj.photo.all()])
