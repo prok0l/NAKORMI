@@ -6,9 +6,11 @@ from aiogram.types import Message, CallbackQuery
 from nakormi_bot.functional.core_context import CoreContext
 from nakormi_bot.functional.core_message import CoreMessage
 from nakormi_bot.functional.phrases import Phrases
+from nakormi_bot.functional.representate_user import represent_user
 
 from nakormi_bot.handlers.registration.states.registration import RegistrationState
 from nakormi_bot.keyboards.language_keyboard import make_language_keyboard
+from nakormi_bot.keyboards.main_menu_keyboard import main_menu_keyboard
 from nakormi_bot.services.api.backend import Backend
 
 router = Router(name='start_command')
@@ -44,7 +46,7 @@ async def start_command_handler(message: Message,
 
         core_message = CoreMessage(chat_id=new_message.chat.id,
                                    message_id=new_message.message_id,
-                                   telegram_id=message.from_user.id,
+                                   telegram_id=message.chat.id,
                                    date=new_message.date)
 
         await context.update_message(core_message)
@@ -52,7 +54,22 @@ async def start_command_handler(message: Message,
 
         return
 
+    if not await backend.users.exists(message.chat.id):
+        return await bot.send_message(chat_id=message.chat.id,
+                                      text=phrases['tg_id'].format(message.chat.id))
+        return
+
     core_message = context.get_message()
+    user = await backend.users.get(message.chat.id)
+    if user.is_active:
+        inventory = await backend.users.inventory(message.chat.id)
+        keyboard = main_menu_keyboard()
+        await bot.edit_message_text(represent_user(user=user, inventory=inventory, phrase=phrases),
+                                    chat_id=core_message.chat_id,
+                                    message_id=core_message.message_id,
+                                    reply_markup=keyboard.as_markup()
+                                    )
+        return
 
     await bot.edit_message_text(chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,

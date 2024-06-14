@@ -7,17 +7,23 @@ from main.models import District
 
 
 class VolunteerSerializer(serializers.ModelSerializer):
-    district = serializers.CharField(source='district.name')
+    district = serializers.SerializerMethodField(required=False)
 
     def update(self, instance, validated_data):
-        if validated_data.get('district'):
-            district = District.objects.filter(name=validated_data.get('district').get('name'))
+        if self.initial_data.get('district'):
+            district = District.objects.filter(name=self.initial_data.get('district'))
             if district:
                 validated_data['district'] = district[0]
             else:
                 raise serializers.ValidationError("District Not Found")
-        super().update(instance, validated_data)
-        return instance
+            super().update(instance, validated_data)
+            return instance
+
+    @staticmethod
+    def get_district(obj):
+        if obj.district:
+            return obj.district.name
+        return None
 
     class Meta:
         model = Volunteer

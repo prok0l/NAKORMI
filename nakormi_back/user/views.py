@@ -22,7 +22,7 @@ class VolunteerView(RetrieveUpdateAPIView):
         instance = self.get_object()
         instance.is_active = True
         instance.save()
-        data.data['is_active'] = True
+        data['is_active'] = True
         return data
 
 

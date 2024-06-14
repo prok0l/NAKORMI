@@ -5,6 +5,7 @@ from aiogram.types import Message, CallbackQuery
 from nakormi_bot.entities.user import User
 from nakormi_bot.functional.core_context import CoreContext
 from nakormi_bot.functional.phrases import Phrases
+from nakormi_bot.functional.representate_user import represent_user
 from nakormi_bot.handlers.registration.states.registration import RegistrationState
 from nakormi_bot.services.api.backend import Backend
 
@@ -22,19 +23,23 @@ async def complete_registration(state: FSMContext,
     # TODO: в отдельный класс ProfileContext/UserContext
 
     data = await state.get_data()
-    name, phone = data['name'], data['phone']
-    email = data['email'] if 'email' in data else '[Не указан]'
-    image = data['image'] if 'image' in data else '[Не указана]'
+    name, phone, district = data['name'], data['phone'], data['district']
+    email = data['email'] if 'email' in data else None
+    image = data['image'] if 'image' in data else None
 
-    await backend.users.register(User(telegram_id=core_message.telegram_id,
+    await backend.users.register(User(tg_id=core_message.telegram_id,
                                       name=name,
                                       phone=phone,
                                       email=email,
-                                      avatar=image))
+                                      image=image,
+                                      district=district))
 
-    await bot.edit_message_text(phrases['registration']['image']['chosen'].format(name, phone, email, image),
+    user = await backend.users.get(user_id=core_message.telegram_id)
+    msg_text = phrases['registration']['image']['chosen'] + represent_user(user=user, inventory=list(), phrase=phrases)
+    await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,
-                                message_id=core_message.message_id)
+                                message_id=core_message.message_id
+                                )
 
     await state.set_state(None)
     await state.update_data(registered=True)

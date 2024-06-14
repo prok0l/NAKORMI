@@ -1,4 +1,5 @@
 from nakormi_bot.entities.user import User
+from nakormi_bot.entities.inventory import InventoryLine
 from nakormi_bot.services.common import BaseService
 import httpx
 
@@ -19,11 +20,11 @@ class UserService(BaseService):
 
     async def register(self, user: User):
         headers = self.headers
-        headers['Tg-Id'] = str(user.telegram_id)
+        headers['Tg-Id'] = str(user.tg_id)
 
         # TODO: Add support for file upload
         async with httpx.AsyncClient() as client:
-            response = await client.patch(f'{self.address}/edit/{user.telegram_id}',
+            response = await client.patch(f'{self.address}/edit/{user.tg_id}',
                                           headers=headers,
                                           data=user.__dict__)
 
@@ -36,4 +37,16 @@ class UserService(BaseService):
         async with httpx.AsyncClient() as client:
             response = await client.get(f'{self.address}/edit/{user_id}',
                                         headers=headers)
-            return User(**response.json())
+            data = response.json()
+            data['tg_id'] = user_id
+            return User(**data)
+
+    async def inventory(self, user_id: int):
+        headers = self.headers
+        headers['Tg-Id'] = str(user_id)
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f'{self.address}/inventory/',
+                                        headers=headers)
+            data = response.json()
+            return [InventoryLine(**item) for item in data]

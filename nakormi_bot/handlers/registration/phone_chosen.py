@@ -8,6 +8,8 @@ from nakormi_bot.functional.phrases import Phrases
 from nakormi_bot.handlers.registration.states.registration import RegistrationState
 from nakormi_bot.keyboards.skip_keyboard import make_skip_keyboard
 
+from nakormi_bot.services.api.backend import Backend
+
 router = Router(name='phone_chosen')
 
 
@@ -18,23 +20,24 @@ async def phone_chosen_handler(message: Message,
                                state: FSMContext,
                                context: CoreContext,
                                phrases: Phrases,
-                               bot: Bot):
+                               bot: Bot,
+                               backend: Backend):
     phone = message.text
     await state.update_data(phone=phone)
 
     core_message = context.get_message()
 
-    await bot.edit_message_text(phrases['registration']['phone']['chosen'],
+    districts = await backend.main.get_districts(user_id=core_message.telegram_id)
+    districts_lst = [x['name'] for x in districts]
+    await state.update_data(districts=districts_lst)
+
+    msg_text = phrases['registration']['phone']['chosen'] + ", ".join(districts_lst)
+
+    await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id)
 
-    reply_markup = make_skip_keyboard('skip_email', phrases)
-
-    await bot.edit_message_reply_markup(chat_id=core_message.chat_id,
-                                        message_id=core_message.message_id,
-                                        reply_markup=reply_markup.as_markup())
-
-    await state.set_state(RegistrationState.waiting_for_email)
+    await state.set_state(RegistrationState.waiting_for_district)
 
 
 @router.message(RegistrationState.waiting_for_phone)
