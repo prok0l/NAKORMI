@@ -7,6 +7,7 @@ from middlewares.throttling import ThrottlingMiddleware
 
 from nakormi_bot.handlers import undefined_command
 from nakormi_bot.handlers.registration import name_chosen, phone_chosen, email_chosen, image_chosen, district_chosen
+from nakormi_bot.handlers.points import menu
 from nakormi_bot.middlewares.language_middleware import LanguageMiddleware
 from nakormi_bot.services.api.backend import Backend
 
@@ -32,7 +33,9 @@ async def run_app(bot_token: str, api_key: str):
                        phone_chosen.router,
                        district_chosen.router,
                        email_chosen.router,
-                       image_chosen.router)
+                       image_chosen.router,
+                       menu.router
+                       )
 
     dp.include_router(undefined_command.router)
 

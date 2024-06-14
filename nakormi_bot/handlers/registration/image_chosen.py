@@ -8,6 +8,7 @@ from nakormi_bot.functional.phrases import Phrases
 from nakormi_bot.functional.representate_user import represent_user
 from nakormi_bot.handlers.registration.states.registration import RegistrationState
 from nakormi_bot.services.api.backend import Backend
+from nakormi_bot.keyboards.main_menu_keyboard import main_menu_keyboard
 
 router = Router(name='image_chosen')
 
@@ -35,10 +36,12 @@ async def complete_registration(state: FSMContext,
                                       district=district))
 
     user = await backend.users.get(user_id=core_message.telegram_id)
+    keyboard = main_menu_keyboard()
     msg_text = phrases['registration']['image']['chosen'] + represent_user(user=user, inventory=list(), phrase=phrases)
     await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,
-                                message_id=core_message.message_id
+                                message_id=core_message.message_id,
+                                reply_markup=keyboard.as_markup()
                                 )
 
     await state.set_state(None)
