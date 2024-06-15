@@ -157,7 +157,7 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-mediafiles/
+nakormi_back/mediafiles/
 nakormi_bot/images/file.png
 
 # PyCharm

@@ -25,7 +25,8 @@ class ReportPhotoAdmin(admin.ModelAdmin):
         html = ''
         print(obj.photo)
         for image in [Photo.objects.get(pk = image.pk ) for image in obj.photo.all()]:
-            html += f'<br><img src="{image.photo.url}" width="320px" height="180px"></br>'
+            html += (f'<a href="{image.photo.url}"><br><img src="{image.photo.url}"'
+                     f' width="320px" height="180px"></br></a>')
         return mark_safe(html)
     def photo_list(self, obj):
         return ', '.join([str(related.pk) for related in obj.photo.all()])
@@ -38,7 +39,8 @@ class TransferPhotoAdmin(admin.ModelAdmin):
         html = ''
         print(obj.photo)
         for image in [Photo.objects.get(pk = image.pk ) for image in obj.photo.all()]:
-            html += f'<br><img src="{image.photo.url}" width="320px" height="180px"></br>'
+            html += (f'<a href="{image.photo.url}"><br><img src="{image.photo.url}"'
+                     f' width="320px" height="180px"></br></a>')
         return mark_safe(html)
 
     def photo_list(self, obj):
