@@ -85,3 +85,5 @@ class ReportPhotoSerializer(serializers.ModelSerializer):
         instance.photo.set(photo)
         instance.save()
         return instance
+
+

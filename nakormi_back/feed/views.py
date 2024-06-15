@@ -70,17 +70,23 @@ class ReportPhotoView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewse
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['report']
     lookup_field = 'report'
+
     def get_queryset(self):
         user = TgIdSerializer(data=self.request.headers)
         user.is_valid(raise_exception=True)
-        queryset = ReportPhoto.objects.all()
+        if user.validated_data.get('tg_id').is_admin:
+            queryset = ReportPhoto.objects.all()
+        else:
+            queryset = ReportPhoto.objects.filter(report = Report.objects.get(pk = user.validated_data.get('tg_id')))
+
         return queryset
 
     def create(self, request, *args, **kwargs):
         user = TgIdSerializer(data=self.request.headers)
         user.is_valid()
         from_user = Report.objects.get(pk=request.data.get('report')).from_user
-        if user.validated_data.get('tg_id') == from_user and  not (ReportPhoto.objects.filter(report = Report.objects.get(pk =request.data.get('report')))) :
+        if user.validated_data.get('tg_id') == from_user and not (
+        ReportPhoto.objects.filter(report=Report.objects.get(pk=request.data.get('report')))):
             uploaded_files = self.request.FILES.getlist('photo')
             print(*uploaded_files)
             photo_list = []
@@ -90,7 +96,7 @@ class ReportPhotoView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewse
                 photo.save()
                 photo_list.append(photo)
             print(photo_list)
-            serializer = self.get_serializer(data = {'report': request.data['report'], 'photo': photo_list})
+            serializer = self.get_serializer(data={'report': request.data['report'], 'photo': photo_list})
 
             print(request.data['report'])
             serializer.is_valid(raise_exception=True)
@@ -98,3 +104,14 @@ class ReportPhotoView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewse
             print('serializer is_valid')
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+class TransferPhotoView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['report']
+    def get_queryset(self):
+        user = TgIdSerializer(data=self.request.headers)
+        user.is_valid(raise_exception=True)
+
+        queryset = ReportPhoto.objects.all()
+        return queryset
+
