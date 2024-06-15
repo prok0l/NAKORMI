@@ -17,3 +17,15 @@ class FeedService(BaseService):
                                         headers=headers)
             data = response.json()
             return [Tag(**item) for item in data.get('tags')]
+
+    async def report_photo(self, user_id: int, report_id: int, file):
+        headers = self.headers
+        headers['Tg-Id'] = str(user_id)
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(f'{self.address}/reports/photo/',
+                                        headers=headers,
+                                        files={'photo': file},
+                                         data={'report': report_id,
+                                               'tg_id': user_id})
+            return response.json()

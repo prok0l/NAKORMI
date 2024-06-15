@@ -7,7 +7,7 @@ from rest_framework_api_key.permissions import HasAPIKey
 
 from feed.serializers import ReportActionSerializer
 from main.serializers import TgIdSerializer
-from .serializers import VolunteerSerializer, InventorySerializer, ShareFeedSerializer
+from .serializers import VolunteerSerializer, InventorySerializer, ShareFeedSerializer, UsageFeedSerializer
 from .models import *
 
 
@@ -60,10 +60,9 @@ class ShareFeed(APIView):
         serializer = ShareFeedSerializer(data=request.data)
         user = TgIdSerializer(data=request.headers)
         if not serializer.is_valid() or not user.is_valid():
-            return JsonResponse(serializer.errors, safe=False)
+            return JsonResponse(serializer.errors, safe=False, status=status.HTTP_400_BAD_REQUEST)
         from_user = user.validated_data['tg_id']
         to_user = serializer.validated_data['to_user']
-        inventories = list()
 
         for feed in serializer.validated_data['content']:
             invent_sender = Inventory.objects.filter(tg_id=from_user,
@@ -91,6 +90,38 @@ class ShareFeed(APIView):
             invent_recipient.save()
             if invent_sender.volume == 0:
                 invent_sender.delete()
+
+        report_action_serializer = ReportActionSerializer(data=request.data)
+        report_action_serializer.is_valid(raise_exception=True)
+        report_action_serializer.save()
+
+        return JsonResponse({"success": True}, status=status.HTTP_200_OK)
+
+
+class UsageFeedView(APIView):
+    permission_classes = [HasAPIKey]
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        serializer = UsageFeedSerializer(data=request.data)
+        user = TgIdSerializer(data=request.headers)
+        serializer.is_valid(raise_exception=True)
+        user.is_valid(raise_exception=True)
+
+        from_user = user.validated_data['tg_id']
+        district = serializer.validated_data['district']
+
+        for feed in serializer.validated_data['content']:
+            invent= Inventory.objects.filter(tg_id=from_user,
+                                             tags__in=feed['tags'][:1])
+            invent = list(set(x for x in invent if [item.get('id') for item in x.tags.values()] ==
+                              [x.id for x in feed['tags']]))
+            if not invent or (invent := invent[0]).volume < feed['volume']:
+                return JsonResponse({"error": "excess balance"}, status=status.HTTP_400_BAD_REQUEST)
+            invent.volume = invent.volume - feed['volume']
+            invent.save()
+            if invent.volume == 0:
+                invent.delete()
 
         report_action_serializer = ReportActionSerializer(data=request.data)
         report_action_serializer.is_valid(raise_exception=True)

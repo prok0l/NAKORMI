@@ -24,7 +24,7 @@ class PointService(BaseService):
             body = {"content": content, "action": 1, "to_user": user_id, "point": point_id}
             response = await client.post(f'{self.address}/take/{point_id}',
                                          headers=headers, json=body)
-            return response.status_code == 200
+            return response.json()
 
     @property
     def map(self):

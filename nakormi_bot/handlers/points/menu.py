@@ -1,4 +1,6 @@
+import asyncio
 from string import digits
+from typing import List
 
 from aiogram import Router, F, Bot
 from aiogram.fsm.context import FSMContext
@@ -12,7 +14,7 @@ from keyboards.main_menu_keyboard import main_menu_keyboard
 from functional.core_context import CoreContext
 from functional.phrases import Phrases
 
-from keyboards.point_keyboard import point_keyboard, is_done_keyboard
+from keyboards.point_keyboard import point_keyboard, is_done_keyboard, is_done_photos_keyboard
 from services.api.backend import Backend
 from handlers.points.state.point import PointState
 
@@ -91,7 +93,9 @@ async def take_feed_handler(callback_query: CallbackQuery,
     await state.update_data(tags=[])
     await state.update_data(content=[])
     await state.update_data(tags_values=[])
+    await state.update_data(file_ids=[])
     await state.update_data(point=None)
+
 
 
 @router.message(PointState.waiting_for_point_num)
@@ -204,6 +208,31 @@ async def volume_handler(message: Message,
         content[ind]["volume"] += volume
         await state.update_data(content=content)
 
+    msg_text = phrases['point']['files'] + phrases['point']['inventory']['text']
+
+    for item in content:
+        msg_text += phrases['point']['inventory']['item'].format(
+            name=" ".join(item['tags_values']), volume=str(item['volume']))
+
+    keyboard = is_done_photos_keyboard()
+    await bot.edit_message_text(msg_text,
+                                chat_id=core_message.chat_id,
+                                message_id=core_message.message_id,
+                                reply_markup=keyboard.as_markup())
+    await state.set_state(PointState.waiting_for_photo)
+
+
+@router.callback_query(F.data.startswith('stop_photo_point'))
+async def point_stop_photo_handler(callback_query: CallbackQuery,
+                        state: FSMContext,
+                        context: CoreContext,
+                        phrases: Phrases,
+                        bot: Bot,
+                        backend: Backend):
+    core_message = context.get_message()
+    data = await state.get_data()
+    content = data.get('content', [])
+
     msg_text = phrases['point']['inventory']['text']
 
     for item in content:
@@ -215,6 +244,27 @@ async def volume_handler(message: Message,
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
                                 reply_markup=keyboard.as_markup())
+    content[-1]['photo_list'] = data['file_ids']
+    await state.update_data(content=content)
+
+
+@router.message(PointState.waiting_for_photo, F.photo)
+async def photo_handler(message: Message,
+                         state: FSMContext,
+                         context: CoreContext,
+                         phrases: Phrases,
+                         bot: Bot,
+                         backend: Backend):
+    core_message = context.get_message()
+    data = await state.get_data()
+    file_ids = data['file_ids']
+    obj = message.photo[-1]
+    file = await message.bot.download(file=obj.file_id, destination="images\\file.png")
+    with open("images\\file.png", "rb") as f:
+        file_id = await backend.main.upload(file=f, user_id=core_message.telegram_id)
+        file_ids.append(file_id[0])
+    await state.update_data(file_ids=file_ids)
+
 
 
 @router.callback_query(F.data.startswith('again_point'))
@@ -264,8 +314,38 @@ async def stop_handler(callback_query: CallbackQuery,
     content = data.get('content')
     to_user = core_message.telegram_id
     point = data['point'].id
+    res = await backend.points.take(user_id=to_user, point_id=point, content=content)
+    await state.update_data(report_id=res['id'])
 
-    await backend.points.take(user_id=to_user, point_id=point, content=content)
+    msg_text = phrases['point']['files_final'] + phrases['point']['inventory']['text']
+
+    for item in content:
+        msg_text += phrases['point']['inventory']['item'].format(
+            name=" ".join(item['tags_values']), volume=str(item['volume']))
+
+    await bot.edit_message_text(msg_text,
+                                chat_id=core_message.chat_id,
+                                message_id=core_message.message_id)
+    await state.set_state(PointState.waiting_for_document)
+
+@router.message(PointState.waiting_for_document, F.photo)
+async def document_handler(message: Message,
+                         state: FSMContext,
+                         context: CoreContext,
+                         phrases: Phrases,
+                         bot: Bot,
+                         backend: Backend):
+    core_message = context.get_message()
+
+    data = await state.get_data()
+
+    obj = message.photo[-1]
+    file = await message.bot.download(file=obj.file_id, destination="images\\file.png")
+    with open("images\\file.png", "rb") as f:
+        file_id = await backend.feed.report_photo(user_id=core_message.telegram_id,
+                                                  file=f,
+                                                  report_id=data['report_id'])
+
     await state.set_state(None)
-    await to_main_handler(callback_query=callback_query, state=state,
+    await to_main_handler(callback_query=None, state=state,
                           context=context, phrases=phrases, bot=bot, backend=backend)

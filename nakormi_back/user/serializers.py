@@ -43,3 +43,16 @@ class InventorySerializer(serializers.ModelSerializer):
 class ShareFeedSerializer(serializers.Serializer):
     content = serializers.ListField(child=ContentField())
     to_user = UserField(queryset=Volunteer.objects.all())
+
+
+class DistrictField(serializers.RelatedField):
+    def to_internal_value(self, data):
+        district = District.objects.filter(id=data)
+        if not district:
+            raise serializers.ValidationError("District does not exist")
+        return district[0]
+
+
+class UsageFeedSerializer(serializers.Serializer):
+    content = serializers.ListField(child=ContentField())
+    district = DistrictField(queryset=District.objects.all())

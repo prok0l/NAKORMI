@@ -15,7 +15,7 @@ class UserService(BaseService):
         async with httpx.AsyncClient() as client:
             response = await client.get(f'{self.address}/edit/{user_id}',
                                         headers=headers)
-
+            print(response.text)
             return response.status_code == 200
 
     async def register(self, user: User):

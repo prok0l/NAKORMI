@@ -86,7 +86,8 @@ class ReportPhotoView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewse
         user.is_valid()
         report = Report.objects.get(pk=request.data.get('report'))
         from_user = report.from_user
-        if user.validated_data.get('tg_id') == from_user and not (ReportPhoto.objects.filter(report=report)):
+        to_user = report.to_user
+        if user.validated_data.get('tg_id') in (from_user, to_user) and not (ReportPhoto.objects.filter(report=report)):
             uploaded_files = self.request.FILES.getlist('photo')
             photo_list = []
             for file in uploaded_files:
@@ -100,6 +101,7 @@ class ReportPhotoView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewse
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
+            print(ReportPhoto.objects.filter(report=report), user.validated_data.get('tg_id') == from_user)
             return Response({"error": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
 

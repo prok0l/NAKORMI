@@ -31,10 +31,10 @@ class ReportActionSerializer(serializers.ModelSerializer):
                 data={'report': instance.pk, 'tags': cont.get('tags'), 'volume': cont.get('volume')})
             transfer_serializer.is_valid(raise_exception=True)
             transfer_serializer.save()
-            print(cont.get('photo_list'))
-            report_photo = ReportPhoto.objects.create(report = instance)
-            report_photo.photo.set([Photo.objects.get(pk = pk) for pk in cont.get('photo_list')])
-            report_photo.save()
+            # print(cont.get('photo_list'))
+            # report_photo = ReportPhoto.objects.create(report = instance)
+            # report_photo.photo.set([Photo.objects.get(pk = pk) for pk in cont.get('photo_list')])
+            # report_photo.save()
 
 
         return instance

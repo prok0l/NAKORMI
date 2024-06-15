@@ -43,9 +43,8 @@ class TakeFeeds(APIView):
 
         report_action_serializer = ReportActionSerializer(data=request.data)
         report_action_serializer.is_valid(raise_exception=True)
-        report_action_serializer.save()
-
-        return JsonResponse(serializer.errors, safe=False)
+        obj = report_action_serializer.save()
+        return JsonResponse({"id": obj.pk}, safe=False, status=status.HTTP_200_OK)
 
 
 class PointView(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin,

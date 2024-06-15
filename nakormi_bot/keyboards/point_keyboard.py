@@ -31,3 +31,12 @@ def is_done_keyboard() -> InlineKeyboardBuilder:
     builder.row(InlineKeyboardButton(text='Готово',
                                      callback_data='stop_point'))
     return builder
+
+
+def is_done_photos_keyboard() -> InlineKeyboardBuilder:
+    builder = InlineKeyboardBuilder()
+
+    builder.row(InlineKeyboardButton(text='Остановить',
+                                     callback_data='stop_photo_point'))
+
+    return builder

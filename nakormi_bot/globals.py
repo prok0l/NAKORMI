@@ -16,7 +16,7 @@ from services.api.backend import Backend
 async def run_app(bot_token: str, api_key: str, api_address: str):
     bot = Bot(token=bot_token)
     storage = MemoryStorage()
-    backend = Backend("api", api_key, api_address)
+    backend = Backend("http://localhost:8000/api", api_key, api_address)
 
     # DI Dependencies
     dp = Dispatcher(storage=storage, bot=bot, backend=backend)
