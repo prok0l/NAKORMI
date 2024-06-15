@@ -67,8 +67,9 @@ async def to_main_handler(callback_query: CallbackQuery,
 
     inventory = await backend.users.inventory(core_message.telegram_id)
     user = await backend.users.get(core_message.telegram_id)
+    analytics = await backend.users.analytics(core_message.telegram_id)
     keyboard = main_menu_keyboard(user)
-    await bot.edit_message_text(represent_user(user=user, inventory=inventory, phrase=phrases),
+    await bot.edit_message_text(represent_user(user=user, inventory=inventory, phrase=phrases, analytics=analytics),
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
                                 reply_markup=keyboard.as_markup(),

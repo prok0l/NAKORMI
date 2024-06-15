@@ -161,3 +161,26 @@ class UsageFeedView(APIView):
         obj = report_action_serializer.save()
 
         return JsonResponse({"id": obj.pk}, status=status.HTTP_200_OK)
+
+
+class VolunteerReportView(APIView):
+    permission_classes = [HasAPIKey]
+    def get(self, request, *args, **kwargs):
+        summ_take_feed = 0
+        for report in Report.objects.filter(to_user=Volunteer.objects.get(tg_id=request.query_params.get('tg_id')),
+                                            action=1):
+            for transfer in Transfer.objects.filter(report=report):
+                summ_take_feed += transfer.volume
+        summ_share_feed = 0
+        for report in Report.objects.filter(from_user=Volunteer.objects.get(tg_id=request.query_params.get('tg_id')),
+                                            action=2):
+            for transfer in Transfer.objects.filter(report=report):
+                summ_share_feed += transfer.volume
+        summ_using_feed = 0
+        for report in Report.objects.filter(from_user=Volunteer.objects.get(tg_id=request.query_params.get('tg_id')),
+                                            action=3):
+            for transfer in Transfer.objects.filter(report=report):
+                summ_using_feed += transfer.volume
+
+        return JsonResponse({'summ_take_feed': summ_take_feed, 'summ_share_feed': summ_share_feed,
+                             'summ_using_feed': summ_using_feed}, safe=False, status=status.HTTP_200_OK)

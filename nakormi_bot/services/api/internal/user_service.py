@@ -1,5 +1,6 @@
 from entities.user import User
 from entities.inventory import InventoryLine
+from entities.analytics import Analytics
 from services.common import BaseService
 import httpx
 
@@ -110,3 +111,14 @@ class UserService(BaseService):
             response = await client.post(f'{self.address}/usage_feed/',
                                          headers=headers, json=body)
             return response.status_code == 200, response.json()
+
+
+    async def analytics(self, from_user: int):
+        headers = self.headers
+        headers['Tg-Id'] = str(from_user)
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f'{self.address}/volunteer/reports/', headers=headers,
+                                        params={"tg_id": from_user})
+
+            return Analytics(**response.json())

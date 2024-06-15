@@ -1,11 +1,12 @@
 from entities.user import User
 from entities.inventory import InventoryLine
+from entities.analytics import Analytics
 from functional.phrases import Phrases
 
 from typing import List
 
 
-def represent_user(user: User, inventory: List[InventoryLine], phrase: Phrases) -> str:
+def represent_user(user: User, inventory: List[InventoryLine], phrase: Phrases, analytics: Analytics) -> str:
     tg_id, name, phone, email, is_admin, district =\
         user.tg_id, user.name, user.phone, user.email, user.is_admin, user.district
     if not email:
@@ -20,4 +21,5 @@ def represent_user(user: User, inventory: List[InventoryLine], phrase: Phrases) 
         for item in inventory:
             string += phrase["main"]["inventory"]["line"].format(tags_line=" ".join(item.tags),
                                                                  volume=item.volume)
+    string += phrase["main"]["analytics"].format(**analytics.__dict__)
     return string

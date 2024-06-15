@@ -12,3 +12,4 @@ class Point:
     photo: str | None
     phone: str | None
     info: str | None
+    is_active: bool

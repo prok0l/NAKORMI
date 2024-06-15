@@ -8,7 +8,8 @@
     "inventory": {
       "text": "\n\nВаш инвентарь:\n",
       "line": "Корм {tags_line} {volume} кг\n"
-    }
+    },
+    "analytics": "\n\nВаши показатели:\nЗабрал корма {summ_take_feed} кг\nПередал корма {summ_share_feed} кг \nСкормил корма {summ_using_feed} кг"
   },
   "language": {
     "pick": "\uD83D\uDC47 Pick your native language",
