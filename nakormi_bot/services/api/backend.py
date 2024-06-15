@@ -12,7 +12,7 @@ class Backend(BaseService):
     def __init__(self, address: str, api_key: str, site_address: str):
         super().__init__(address, api_key, site_address)
 
-        self.users = UserService(f'{address}/user', api_key, site_address)
-        self.points = PointService(f'{address}/point', api_key, site_address)
-        self.feed = FeedService(f'{address}/feed', api_key, site_address)
-        self.main = MainService(f'{address}/main', api_key, site_address)
+        self.users: UserService = UserService(f'{address}/user', api_key, site_address)
+        self.points: PointService = PointService(f'{address}/point', api_key, site_address)
+        self.feed: FeedService = FeedService(f'{address}/feed', api_key, site_address)
+        self.main: MainService = MainService(f'{address}/main', api_key, site_address)
