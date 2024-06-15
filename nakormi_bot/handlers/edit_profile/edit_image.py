@@ -10,8 +10,8 @@ from handlers.registration.states.registration import RegistrationState
 from keyboards.redirect_keyboard import make_redirect_keyboard
 from keyboards.skip_keyboard import make_skip_keyboard
 
-from nakormi_bot.keyboards.edit_profile_keyboard import make_edit_profile_keyboard
-from nakormi_bot.services.api.backend import Backend
+from keyboards.edit_profile_keyboard import make_edit_profile_keyboard
+from services.api.backend import Backend
 
 router = Router(name='edit_image')
 

@@ -5,15 +5,12 @@ from aiogram.types import Message, CallbackQuery
 from filters.regex_match_filter import RegexMatchFilter
 from functional.core_context import CoreContext
 from functional.phrases import Phrases
-from handlers.registration.states.registration import RegistrationState
-from keyboards.skip_keyboard import make_skip_keyboard
+from keyboards.admin_keyboard import admin_keyboard
 
-from keyboards.edit_profile_keyboard import make_edit_profile_keyboard
-
-router = Router(name='email_chosen')
+router = Router(name='admin_main')
 
 
-@router.callback_query(F.data.startswith('edit_profile'))
+@router.callback_query(F.data.startswith('admin_main'))
 async def edit_profile_handler(callback_query: CallbackQuery,
                                state: FSMContext,
                                context: CoreContext,
@@ -21,13 +18,14 @@ async def edit_profile_handler(callback_query: CallbackQuery,
                                bot: Bot):
     core_message = context.get_message()
 
-    await bot.edit_message_text(phrases['edit_profile']['info'],
+    keyboard = admin_keyboard()
+
+    await bot.edit_message_text(phrases['admin']['main'],
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
+                                reply_markup=keyboard.as_markup(),
                                 parse_mode='HTML')
 
-    reply_markup = make_edit_profile_keyboard(phrases)
 
-    await bot.edit_message_reply_markup(chat_id=core_message.chat_id,
-                                        message_id=core_message.message_id,
-                                        reply_markup=reply_markup.as_markup())
+
+

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Point:
-    id: int
+    id: int | None
     district: str
     name: str
     address: str

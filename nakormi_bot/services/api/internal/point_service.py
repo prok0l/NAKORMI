@@ -1,3 +1,4 @@
+from entities.point import Point
 from entities.user import User
 from services.common import BaseService
 import httpx
@@ -29,3 +30,23 @@ class PointService(BaseService):
     @property
     def map(self):
         return f'{self.site_address}/map/'
+
+    async def create_point(self, from_user: int, point_obj: Point, file):
+        headers = self.headers
+        headers['Tg-Id'] = str(from_user)
+
+        async with httpx.AsyncClient() as client:
+            data = {k: v for k, v in point_obj.__dict__.items() if v}
+            response = await client.post(f'{self.address}/points/', headers=headers,
+                                         data=data,
+                                         files=file)
+
+    async def update_point(self, from_user: int, data):
+        headers = self.headers
+        headers['Tg-Id'] = str(from_user)
+
+        data.pop('photo')
+
+        async with httpx.AsyncClient() as client:
+            response = await client.patch(f'{self.address}/points/{data["id"]}', headers=headers,
+                                         data=data)

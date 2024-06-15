@@ -19,6 +19,6 @@ def main_menu_keyboard(user) -> InlineKeyboardBuilder:
 
     if user.is_admin:
         builder.row(InlineKeyboardButton(text='Админ панель',
-                                         callback_data='admin'))
+                                         callback_data='admin_main'))
 
     return builder

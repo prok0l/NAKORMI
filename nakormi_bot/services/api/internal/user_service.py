@@ -56,9 +56,9 @@ class UserService(BaseService):
 
         async with httpx.AsyncClient() as client:
             response = await client.patch(f'{self.address}/edit/{user_id}',
-                                         data={'tg_id': user_id},
-                                         files={'image': file},
-                                         headers=headers)
+                                          data={'tg_id': user_id},
+                                          files={'image': file},
+                                          headers=headers)
             print(response.json())
             return response.json()
 
@@ -111,7 +111,6 @@ class UserService(BaseService):
             response = await client.post(f'{self.address}/usage_feed/',
                                          headers=headers, json=body)
             return response.status_code == 200, response.json()
-
 
     async def analytics(self, from_user: int):
         headers = self.headers

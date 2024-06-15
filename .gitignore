@@ -158,7 +158,7 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 nakormi_back/mediafiles/
-nakormi_bot/images/file.png
+nakormi_bot/images/*
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
