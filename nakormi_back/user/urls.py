@@ -10,4 +10,5 @@ urlpatterns = [
     path('check/<int:pk>', CheckUserView.as_view(), name='Check'),
     path('share_feed/', ShareFeed.as_view(), name='ShareFeed'),
     path('usage_feed/', UsageFeedView.as_view(), name='ShareFeed'),
+    path('volunteer/reports/', VolunteerReportView.as_view())
 ]

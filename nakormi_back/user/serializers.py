@@ -56,3 +56,10 @@ class DistrictField(serializers.RelatedField):
 class UsageFeedSerializer(serializers.Serializer):
     content = serializers.ListField(child=ContentField())
     district = DistrictField(queryset=District.objects.all())
+
+class VolunteerReportSerializer(serializers.Serializer):
+    summ_take_feed = serializers.IntegerField()
+    summ_share_feed = serializers.IntegerField()
+    summ_using_feed = serializers.IntegerField()
+
+

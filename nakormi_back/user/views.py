@@ -5,6 +5,7 @@ from rest_framework.generics import UpdateAPIView, RetrieveUpdateAPIView
 from rest_framework.views import APIView
 from rest_framework_api_key.permissions import HasAPIKey
 
+from feed.models import Transfer, Report
 from feed.serializers import ReportActionSerializer
 from main.serializers import TgIdSerializer
 from .serializers import VolunteerSerializer, InventorySerializer, ShareFeedSerializer, UsageFeedSerializer
@@ -68,20 +69,20 @@ class ShareFeed(APIView):
             invent_sender = Inventory.objects.filter(tg_id=from_user,
                                                      tags__in=feed['tags'][:1])
             invent_sender = list(set(x for x in invent_sender if [item.get('id') for item in x.tags.values()] ==
-                              [x.id for x in feed['tags']]))
+                                     [x.id for x in feed['tags']]))
             if not invent_sender or (invent_sender := invent_sender[0]).volume < feed['volume']:
                 return JsonResponse({"error": "excess balance"}, status=status.HTTP_400_BAD_REQUEST)
 
             invent_recipient = Inventory.objects.filter(tg_id=to_user,
                                                         tags__in=feed['tags'][:1])
             invent_recipient = list(set(x for x in invent_recipient if [item.get('id') for item in x.tags.values()] ==
-                              [x.id for x in feed['tags']]))
+                                        [x.id for x in feed['tags']]))
             if invent_recipient:
                 invent_recipient = invent_recipient[0]
                 invent_recipient.volume = invent_recipient.volume + feed['volume']
             else:
                 invent_recipient = Inventory.objects.create(tg_id=to_user,
-                                                  volume=feed['volume'])
+                                                            volume=feed['volume'])
                 for tag in feed['tags']:
                     invent_recipient.tags.add(tag)
             invent_sender.volume = invent_sender.volume - feed['volume']
@@ -112,8 +113,8 @@ class UsageFeedView(APIView):
         district = serializer.validated_data['district']
 
         for feed in serializer.validated_data['content']:
-            invent= Inventory.objects.filter(tg_id=from_user,
-                                             tags__in=feed['tags'][:1])
+            invent = Inventory.objects.filter(tg_id=from_user,
+                                              tags__in=feed['tags'][:1])
             invent = list(set(x for x in invent if [item.get('id') for item in x.tags.values()] ==
                               [x.id for x in feed['tags']]))
             if not invent or (invent := invent[0]).volume < feed['volume']:
@@ -125,6 +126,30 @@ class UsageFeedView(APIView):
 
         report_action_serializer = ReportActionSerializer(data=request.data)
         report_action_serializer.is_valid(raise_exception=True)
-        obj = report_action_serializer.save()
+        report_action_serializer.save()
 
-        return JsonResponse({"id": obj.pk}, status=status.HTTP_200_OK)
+        return JsonResponse({"success": True}, status=status.HTTP_200_OK)
+
+
+class VolunteerReportView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        summ_take_feed = 0
+        print(request.query_params)
+        for report in Report.objects.filter(to_user=Volunteer.objects.get(tg_id=request.query_params.get('tg_id')),
+                                            action=1):
+            for transfer in Transfer.objects.filter(report=report):
+                summ_take_feed += transfer.volume
+        summ_share_feed = 0
+        for report in Report.objects.filter(from_user=Volunteer.objects.get(tg_id=request.query_params.get('tg_id')),
+                                            action=2):
+            for transfer in Transfer.objects.filter(report=report):
+                summ_share_feed += transfer.volume
+        summ_using_feed = 0
+        for report in Report.objects.filter(from_user=Volunteer.objects.get(tg_id=request.query_params.get('tg_id')),
+                                            action=3):
+            for transfer in Transfer.objects.filter(report=report):
+                summ_using_feed += transfer.volume
+
+        return JsonResponse({'summ_take_feed': summ_take_feed, 'summ_share_feed': summ_share_feed,
+                             'summ_using_feed': summ_using_feed}, safe=False, status=status.HTTP_200_OK)
