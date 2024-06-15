@@ -18,7 +18,6 @@ class TagSerializer(serializers.ModelSerializer):
 class ReportActionSerializer(serializers.ModelSerializer):
     content = serializers.ListField()
     photo = serializers.ListField(required=False)
-
     class Meta:
         model = Report
         fields = '__all__'
@@ -32,6 +31,11 @@ class ReportActionSerializer(serializers.ModelSerializer):
                 data={'report': instance.pk, 'tags': cont.get('tags'), 'volume': cont.get('volume')})
             transfer_serializer.is_valid(raise_exception=True)
             transfer_serializer.save()
+            print(cont.get('photo_list'))
+            report_photo = ReportPhoto.objects.create(report = instance)
+            report_photo.photo.set([Photo.objects.get(pk = pk) for pk in cont.get('photo_list')])
+            report_photo.save()
+
 
         return instance
 
