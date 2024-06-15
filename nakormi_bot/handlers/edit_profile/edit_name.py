@@ -30,10 +30,6 @@ async def edit_name_handler(callback_query: CallbackQuery,
                                 message_id=core_message.message_id,
                                 parse_mode='HTML')
 
-    await bot.edit_message_reply_markup(chat_id=core_message.chat_id,
-                                        message_id=core_message.message_id,
-                                        reply_markup=None)
-
     await state.set_state(ProfileEditState.waiting_for_name)
 
 

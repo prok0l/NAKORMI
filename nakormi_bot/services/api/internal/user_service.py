@@ -15,7 +15,6 @@ class UserService(BaseService):
         async with httpx.AsyncClient() as client:
             response = await client.get(f'{self.address}/edit/{user_id}',
                                         headers=headers)
-            print(response.text)
             return response.status_code == 200
 
     async def register(self, user: User):
@@ -26,7 +25,11 @@ class UserService(BaseService):
         async with httpx.AsyncClient() as client:
             response = await client.patch(f'{self.address}/edit/{user.tg_id}',
                                           headers=headers,
-                                          data=user.__dict__)
+                                          data={"tg_id": user.tg_id,
+                                                "name": user.name,
+                                                "phone": user.phone,
+                                                "email": user.email,
+                                                "district": user.district})
 
             return response.status_code == 200
 
@@ -38,7 +41,11 @@ class UserService(BaseService):
         async with httpx.AsyncClient() as client:
             response = await client.patch(f'{self.address}/edit/{user.tg_id}',
                                           headers=headers,
-                                          data=user.__dict__)
+                                          data={"tg_id": user.tg_id,
+                                                "name": user.name,
+                                                "phone": user.phone,
+                                                "email": user.email,
+                                                "district": user.district})
 
             return response.status_code == 200
 
@@ -47,10 +54,11 @@ class UserService(BaseService):
         headers['Tg-Id'] = str(user_id)
 
         async with httpx.AsyncClient() as client:
-            response = await client.post(f'{self.address}/edit/upload/{user_id}',
+            response = await client.patch(f'{self.address}/edit/{user_id}',
+                                         data={'tg_id': user_id},
                                          files={'image': file},
                                          headers=headers)
-
+            print(response.json())
             return response.json()
 
     async def get(self, user_id: int):

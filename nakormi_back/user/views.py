@@ -1,15 +1,17 @@
 from django.http import JsonResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, mixins, viewsets
-from rest_framework.generics import UpdateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.views import APIView
 from rest_framework_api_key.permissions import HasAPIKey
 
 from feed.models import Transfer, Report
 from feed.serializers import ReportActionSerializer
 from main.serializers import TgIdSerializer
+from main.permissions import IsAdmin
 from .serializers import VolunteerSerializer, InventorySerializer, ShareFeedSerializer, UsageFeedSerializer
 from .models import *
+from .filters import DistrictInventoryFilter
 
 
 class VolunteerView(RetrieveUpdateAPIView):
@@ -41,11 +43,30 @@ class InventoryView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.G
         return queryset
 
 
+class InventoryAnalytics(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    permission_classes = [HasAPIKey, IsAdmin]
+    serializer_class = InventorySerializer
+    filter_backends = [DistrictInventoryFilter]
+    filterset_fields = ['tg_id__district__name']
+
+    def get_queryset(self):
+        return Inventory.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        res = dict()
+        for item in queryset:
+            res[tuple(x.name for x in item.tags.all())] = \
+                res.get(tuple(x.name for x in item.tags.all()), 0) + item.volume
+        return JsonResponse([{"tags": k, "volume": v} for k, v in res.items()], safe=False, status=status.HTTP_200_OK)
+
+
 class CheckUserView(APIView):
     permission_classes = [HasAPIKey]
 
-    def get(self, request, pk, *args, **kwargs):
-        print(pk)
+    @staticmethod
+    def get(request, pk, *args, **kwargs):
         user = Volunteer.objects.filter(tg_id=pk)
         if user:
             return JsonResponse({}, status=status.HTTP_200_OK, safe=False)
@@ -70,8 +91,14 @@ class ShareFeed(APIView):
                                                      tags__in=feed['tags'][:1])
             invent_sender = list(set(x for x in invent_sender if [item.get('id') for item in x.tags.values()] ==
                                      [x.id for x in feed['tags']]))
-            if not invent_sender or (invent_sender := invent_sender[0]).volume < feed['volume']:
+            if not invent_sender or (invent_sender[0]).volume < feed['volume']:
                 return JsonResponse({"error": "excess balance"}, status=status.HTTP_400_BAD_REQUEST)
+
+        for feed in serializer.validated_data['content']:
+            invent_sender = Inventory.objects.filter(tg_id=from_user,
+                                                     tags__in=feed['tags'][:1])
+            invent_sender = list(set(x for x in invent_sender if [item.get('id') for item in x.tags.values()] ==
+                                     [x.id for x in feed['tags']]))[0]
 
             invent_recipient = Inventory.objects.filter(tg_id=to_user,
                                                         tags__in=feed['tags'][:1])
@@ -110,7 +137,6 @@ class UsageFeedView(APIView):
         user.is_valid(raise_exception=True)
 
         from_user = user.validated_data['tg_id']
-        district = serializer.validated_data['district']
 
         for feed in serializer.validated_data['content']:
             invent = Inventory.objects.filter(tg_id=from_user,
@@ -119,6 +145,12 @@ class UsageFeedView(APIView):
                               [x.id for x in feed['tags']]))
             if not invent or (invent := invent[0]).volume < feed['volume']:
                 return JsonResponse({"error": "excess balance"}, status=status.HTTP_400_BAD_REQUEST)
+
+        for feed in serializer.validated_data['content']:
+            invent = Inventory.objects.filter(tg_id=from_user,
+                                              tags__in=feed['tags'][:1])
+            invent = list(set(x for x in invent if [item.get('id') for item in x.tags.values()] ==
+                              [x.id for x in feed['tags']]))[0]
             invent.volume = invent.volume - feed['volume']
             invent.save()
             if invent.volume == 0:
@@ -126,30 +158,6 @@ class UsageFeedView(APIView):
 
         report_action_serializer = ReportActionSerializer(data=request.data)
         report_action_serializer.is_valid(raise_exception=True)
-        report_action_serializer.save()
+        obj = report_action_serializer.save()
 
-        return JsonResponse({"success": True}, status=status.HTTP_200_OK)
-
-
-class VolunteerReportView(APIView):
-
-    def get(self, request, *args, **kwargs):
-        summ_take_feed = 0
-        print(request.query_params)
-        for report in Report.objects.filter(to_user=Volunteer.objects.get(tg_id=request.query_params.get('tg_id')),
-                                            action=1):
-            for transfer in Transfer.objects.filter(report=report):
-                summ_take_feed += transfer.volume
-        summ_share_feed = 0
-        for report in Report.objects.filter(from_user=Volunteer.objects.get(tg_id=request.query_params.get('tg_id')),
-                                            action=2):
-            for transfer in Transfer.objects.filter(report=report):
-                summ_share_feed += transfer.volume
-        summ_using_feed = 0
-        for report in Report.objects.filter(from_user=Volunteer.objects.get(tg_id=request.query_params.get('tg_id')),
-                                            action=3):
-            for transfer in Transfer.objects.filter(report=report):
-                summ_using_feed += transfer.volume
-
-        return JsonResponse({'summ_take_feed': summ_take_feed, 'summ_share_feed': summ_share_feed,
-                             'summ_using_feed': summ_using_feed}, safe=False, status=status.HTTP_200_OK)
+        return JsonResponse({"id": obj.pk}, status=status.HTTP_200_OK)

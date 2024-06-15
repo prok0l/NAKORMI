@@ -55,8 +55,8 @@ class PointView(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListMo
 
     filter_backends = [PointFilter]
     serializer_class = PointSerializer
-    queryset = Point.objects.all()
-    filterset_fields = ['district__city', 'district__name','is_active']
+    queryset = Point.objects.filter(is_active=True)
+    filterset_fields = ['district__city', 'district__name', 'is_active']
     filterset_class = PointFilterSet
 
 
@@ -64,7 +64,7 @@ class PointView(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListMo
 
 def get_map(request, *args, **kwargs):
     """Получение карты"""
-    points = Point.objects.all()
+    points = Point.objects.filter(is_active=True)
     warehouses = Warehouse.objects.all()
     map_path = MapGeneration(points=points, warehouses=warehouses).map
     return render(request, template_name=map_path)

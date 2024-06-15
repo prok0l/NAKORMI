@@ -7,6 +7,7 @@ from middlewares.throttling import ThrottlingMiddleware
 
 from handlers import undefined_command
 from handlers.registration import name_chosen, phone_chosen, email_chosen, image_chosen, district_chosen
+from handlers.edit_profile import edit_profile, edit_name, edit_email, edit_phone, edit_image
 from handlers.points import menu
 from handlers.share_feed import share
 from handlers.usage import usage
@@ -38,7 +39,12 @@ async def run_app(bot_token: str, api_key: str, api_address: str):
                        image_chosen.router,
                        menu.router,
                        share.router,
-                       usage.router
+                       usage.router,
+                       edit_profile.router,
+                       edit_name.router,
+                       edit_email.router,
+                       edit_phone.router,
+                       edit_image.router
                        )
 
     dp.include_router(undefined_command.router)

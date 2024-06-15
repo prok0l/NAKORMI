@@ -30,10 +30,6 @@ async def edit_image_handler(callback_query: CallbackQuery,
                                 message_id=core_message.message_id,
                                 parse_mode='HTML')
 
-    await bot.edit_message_reply_markup(chat_id=core_message.chat_id,
-                                        message_id=core_message.message_id,
-                                        reply_markup=None)
-
     await state.set_state(ProfileEditState.waiting_for_image)
 
 
@@ -51,7 +47,7 @@ async def image_chosen_handler(message: Message,
 
     obj = message.photo[-1]
     file = await message.bot.download(file=obj.file_id, destination="images\\avatar.png")
-    with open("images\\file.png", "rb") as f:
+    with open("images\\avatar.png", "rb") as f:
         file_id = await backend.users.upload_avatar(file=f, user_id=core_message.telegram_id)
 
     await backend.users.update(user)

@@ -18,8 +18,8 @@ class VolunteerSerializer(serializers.ModelSerializer):
                 validated_data['district'] = district[0]
             else:
                 raise serializers.ValidationError("District Not Found")
-            super().update(instance, validated_data)
-            return instance
+        super().update(instance, validated_data)
+        return instance
 
     @staticmethod
     def get_district(obj):
