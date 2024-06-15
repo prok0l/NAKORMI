@@ -11,6 +11,7 @@ class Photo(models.Model):
         return self.pk
 
     def get_url(self):
+        print(self.photo.storage)
         return reverse('PhotoView', args = [str(self.pk)])
 
 
