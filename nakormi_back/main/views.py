@@ -11,7 +11,7 @@ from rest_framework import mixins, viewsets
 
 
 # Create your views here.
-class PhotoView(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+class PhotoView( mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """Загрузка фотографии"""
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
@@ -26,3 +26,7 @@ class DistrictView(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Lis
     filterset_fields = ['city']
     serializer_class = DistrictSerializer
     queryset = District.objects.all()
+
+
+
+

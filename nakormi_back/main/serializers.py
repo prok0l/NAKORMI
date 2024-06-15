@@ -12,6 +12,7 @@ class DistrictSerializer(serializers.ModelSerializer):
 
 class PhotoSerializer(serializers.ModelSerializer):
     photo = serializers.CharField(source='get_photo', read_only=True)
+    url = serializers.CharField(source='get_url', read_only=True)
     class Meta:
         model = Photo
         fields = '__all__'

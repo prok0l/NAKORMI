@@ -1,4 +1,5 @@
 from django.db import models
+from rest_framework.reverse import reverse
 
 
 # Create your models here.
@@ -9,6 +10,9 @@ class Photo(models.Model):
 
     def get_photo(self):
         return self.pk
+
+    def get_url(self):
+        return reverse('PhotoView', args = [str(self.pk)])
 
 
 class Action(models.Model):
