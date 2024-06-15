@@ -5,9 +5,11 @@ from main.models import District
 
 
 class Point(models.Model):
+    objects = models.Manager()
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
     lat = models.FloatField()
+    is_active = models.BooleanField(default=True)
     lon = models.FloatField()
     photo = models.ImageField(upload_to="points", blank=True)
     phone = models.CharField(max_length=20, blank=True, null=True,

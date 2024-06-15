@@ -56,8 +56,10 @@ class PointView(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.ListMo
     filter_backends = [PointFilter]
     serializer_class = PointSerializer
     queryset = Point.objects.all()
-    filterset_fields = ['district__city', 'district__name']
+    filterset_fields = ['district__city', 'district__name','is_active']
     filterset_class = PointFilterSet
+
+
 
 
 def get_map(request, *args, **kwargs):

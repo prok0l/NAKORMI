@@ -42,7 +42,10 @@ class ReportFilterSet(django_filters.FilterSet):
         fields = {
             'from_user__district': ['exact'],
             'from_user': ['exact'],
-            'to_user': ['exact']
+            'to_user': ['exact'],
+            'point':['exact'],
+            'point__is_active':['exact']
+
         }
 
 
@@ -62,6 +65,10 @@ class ReportFilter(DjangoFilterBackend):
             filter_fields['from_user'] = data['sender_tg_id']
         if 'recipient_tg_id' in data:
             filter_fields['to_user'] = data['recipient_tg_id']
+        if 'point' in data: #Фильтр на точку
+            filter_fields['point'] = data['point']
+        if 'point_is_active' in data: #Фильтр на на активную/удаленную точку
+            filter_fields['point__is_active'] = data['point_is_active']
 
         # Возвращаем инстанс фильтра
         return filterset_class(data=filter_fields, queryset=queryset, request=request)

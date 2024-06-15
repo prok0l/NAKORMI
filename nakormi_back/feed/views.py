@@ -32,7 +32,7 @@ class ReportView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Gene
     serializer_class = ReportSerializer
     permission_classes = [HasAPIKey]
     filter_backends = [ReportFilter]
-    filterset_fields = ['from_user__district', 'from_user', 'to_user']
+    filterset_fields = ['point','point__is_active','from_user__district', 'from_user', 'to_user']
     filterset_class = ReportFilterSet
 
     def get_queryset(self):
@@ -51,7 +51,7 @@ class TransferView(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Ge
     serializer_class = TransferSerializer
     permission_classes = [HasAPIKey]
     filter_backends = [TransferFilter]
-    filterset_fields = ['sender_tg_id', 'recipient_tg_id', 'report__from_user__district']
+    filterset_fields = ['report__point','sender_tg_id', 'recipient_tg_id', 'report__from_user__district']
     filterset_class = TransferFilterSet
 
     def get_queryset(self):

@@ -9,7 +9,8 @@ class PointFilterSet(django_filters.FilterSet):
         model = Point
         fields = {
             'district__city': ['exact'],
-            'district__name': ['exact']
+            'district__name': ['exact'],
+            'is_active': ['exact']
         }
 
 
@@ -25,6 +26,8 @@ class PointFilter(DjangoFilterBackend):
             filter_fields['district__city'] = data['city']
         if request.query_params.get('district'):
             filter_fields['district__name'] = data['district']
+        if request.query_params.get('is_active'):
+            filter_fields['is_active'] = data['is_active']
 
         # Возвращаем инстанс фильтра
         return filterset_class(data=filter_fields, queryset=queryset, request=request)
