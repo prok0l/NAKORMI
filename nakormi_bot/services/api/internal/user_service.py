@@ -42,6 +42,17 @@ class UserService(BaseService):
 
             return response.status_code == 200
 
+    async def upload_avatar(self, file, user_id: int):
+        headers = self.headers
+        headers['Tg-Id'] = str(user_id)
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(f'{self.address}/edit/upload/{user_id}',
+                                         files={'image': file},
+                                         headers=headers)
+
+            return response.json()
+
     async def get(self, user_id: int):
         headers = self.headers
         headers['Tg-Id'] = str(user_id)

@@ -26,13 +26,12 @@ async def complete_registration(state: FSMContext,
     data = await state.get_data()
     name, phone, district = data['name'], data['phone'], data['district']
     email = data['email'] if 'email' in data else None
-    image = data['image'] if 'image' in data else None
 
     await backend.users.register(User(tg_id=core_message.telegram_id,
                                       name=name,
                                       phone=phone,
                                       email=email,
-                                      image=image,
+                                      photo='None',
                                       district=district))
 
     user = await backend.users.get(user_id=core_message.telegram_id)
@@ -57,8 +56,12 @@ async def image_chosen_handler(message: Message,
                                phrases: Phrases,
                                bot: Bot,
                                backend: Backend):
-    image_id = message.photo[-1].file_id
-    await state.update_data(image=image_id)
+    core_message = context.get_message()
+
+    obj = message.photo[-1]
+    file = await message.bot.download(file=obj.file_id, destination="images\\avatar.png")
+    with open("images\\file.png", "rb") as f:
+        file_id = await backend.users.upload_avatar(file=f, user_id=core_message.telegram_id)
 
     await complete_registration(state, context, phrases, bot, backend)
 

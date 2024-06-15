@@ -49,12 +49,12 @@ async def image_chosen_handler(message: Message,
 
     user = await backend.users.get(core_message.telegram_id)
 
-    image_id = message.photo[-1].file_id
-    user.image = image_id
+    obj = message.photo[-1]
+    file = await message.bot.download(file=obj.file_id, destination="images\\avatar.png")
+    with open("images\\file.png", "rb") as f:
+        file_id = await backend.users.upload_avatar(file=f, user_id=core_message.telegram_id)
 
     await backend.users.update(user)
-
-    await state.update_data(image=image_id)
 
     core_message = context.get_message()
 

@@ -7,7 +7,7 @@ class User:
     name: str
     phone: str
     email: str
-    image: str
+    photo: str
     is_active: bool = False
     is_admin: bool = False
     district: str | None = None
