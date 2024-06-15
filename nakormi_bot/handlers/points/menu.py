@@ -328,6 +328,7 @@ async def stop_handler(callback_query: CallbackQuery,
                                 message_id=core_message.message_id)
     await state.set_state(PointState.waiting_for_document)
 
+
 @router.message(PointState.waiting_for_document, F.photo)
 async def document_handler(message: Message,
                          state: FSMContext,

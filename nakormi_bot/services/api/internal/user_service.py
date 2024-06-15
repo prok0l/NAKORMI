@@ -68,4 +68,4 @@ class UserService(BaseService):
             body = {"content": content, "action": 2, "from_user": from_user, "to_user": to_user}
             response = await client.post(f'{self.address}/share_feed/',
                                          headers=headers, json=body)
-            return response.status_code == 200
+            return response.status_code == 200, response.json()
