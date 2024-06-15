@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from main.models import Photo
 from main.serializers import PhotoSerializer
-from .models import Tag, Report, Transfer, ReportPhoto
+from .models import Tag, Report, Transfer, ReportPhoto, TransferPhoto
 
 from django.core.files.uploadhandler import FileUploadHandler
 
@@ -30,12 +30,10 @@ class ReportActionSerializer(serializers.ModelSerializer):
             transfer_serializer = TransferSerializer(
                 data={'report': instance.pk, 'tags': cont.get('tags'), 'volume': cont.get('volume')})
             transfer_serializer.is_valid(raise_exception=True)
-            transfer_serializer.save()
-            # print(cont.get('photo_list'))
-            # report_photo = ReportPhoto.objects.create(report = instance)
-            # report_photo.photo.set([Photo.objects.get(pk = pk) for pk in cont.get('photo_list')])
-            # report_photo.save()
-
+            obj = transfer_serializer.save()
+            transfer_photo = TransferPhoto.objects.create(transfer=obj)
+            transfer_photo.photo.set([Photo.objects.get(pk=pk) for pk in cont.get('photo_list')])
+            transfer_photo.save()
 
         return instance
 
