@@ -77,33 +77,31 @@ class ReportPhotoView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewse
         if user.validated_data.get('tg_id').is_admin:
             queryset = ReportPhoto.objects.all()
         else:
-            queryset = ReportPhoto.objects.filter(report = Report.objects.get(pk = user.validated_data.get('tg_id')))
+            queryset = ReportPhoto.objects.filter(report=Report.objects.get(pk=user.validated_data.get('tg_id')))
 
         return queryset
 
     def create(self, request, *args, **kwargs):
         user = TgIdSerializer(data=self.request.headers)
         user.is_valid()
-        from_user = Report.objects.get(pk=request.data.get('report')).from_user
-        if user.validated_data.get('tg_id') == from_user and not (
-        ReportPhoto.objects.filter(report=Report.objects.get(pk=request.data.get('report')))):
+        report = Report.objects.get(pk=request.data.get('report'))
+        from_user = report.from_user
+        if user.validated_data.get('tg_id') == from_user and not (ReportPhoto.objects.filter(report=report)):
             uploaded_files = self.request.FILES.getlist('photo')
-            print(*uploaded_files)
             photo_list = []
             for file in uploaded_files:
-                print(file)
                 photo = Photo.objects.create(photo=file)
                 photo.save()
                 photo_list.append(photo)
-            print(photo_list)
             serializer = self.get_serializer(data={'report': request.data['report'], 'photo': photo_list})
 
-            print(request.data['report'])
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
-            print('serializer is_valid')
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response({"error": "error"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class TransferPhotoView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     filter_backends = [DjangoFilterBackend]

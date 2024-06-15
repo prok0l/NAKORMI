@@ -68,7 +68,8 @@ class MyJsonEncoder(DjangoJSONEncoder):
 
 class ReportPhotoSerializer(serializers.ModelSerializer):
     photo = serializers.ListField(required=False, write_only=True)
-    photo_list = PhotoSerializer(required=False, many = True, read_only=True, queryset = Photo.objects.all())
+    photo_list = PhotoSerializer(source='photo', required=False, many=True, read_only=True)
+
     class Meta:
         model = ReportPhoto
         fields = '__all__'
@@ -84,6 +85,7 @@ class ReportPhotoSerializer(serializers.ModelSerializer):
 
         instance.photo.set(photo)
         instance.save()
+        print(instance)
         return instance
 
 

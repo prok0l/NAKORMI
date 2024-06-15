@@ -15,10 +15,10 @@ class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
         fields = '__all__'
-        extra_kwargs = {'id':{'read_only':True}}
+        extra_kwargs = {'id': {'read_only':True}}
 
     def to_representation(self, instance):
-        return instance.image
+        return instance.pk
 
 
 

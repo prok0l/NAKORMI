@@ -7,7 +7,7 @@ class Photo(models.Model):
 
     objects = models.Manager()
 
-    def get_photo (self):
+    def get_photo(self):
         return self.pk
 
 

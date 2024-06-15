@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import generics, mixins, viewsets
+from rest_framework import generics, mixins, viewsets, status
 from rest_framework.views import APIView
 from rest_framework_api_key.permissions import HasAPIKey
 from django.http import JsonResponse
@@ -25,7 +25,7 @@ class TakeFeeds(APIView):
         serializer = ReceptionSerializer(data=request.data)
         user = TgIdSerializer(data=request.headers)
         if not serializer.is_valid() or not user.is_valid():
-            return JsonResponse(serializer.errors, safe=False)
+            return JsonResponse(serializer.errors, safe=False, status=status.HTTP_400_BAD_REQUEST)
         for feed in serializer.validated_data['content']:
             invent = Inventory.objects.filter(tg_id=user.validated_data['tg_id'],
                                               tags__in=feed['tags'][:1])
