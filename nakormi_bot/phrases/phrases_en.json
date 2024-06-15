@@ -1,30 +1,119 @@
 {
+  "tg_id": "Your ID - {0}\nTo restart, press /start",
+  "main": {
+    "info": "Here is your data: \n\nYour ID: <code>{id}</code>\nYour name: {name}\nYour phone: {phone}\nYour email: {email}\nYour role: {role}\nYour district: {district}",
+    "not_specified": "Not specified",
+    "admin": "Admin",
+    "volunteer": "Volunteer",
+    "inventory": {
+      "text": "\n\nYour inventory:\n",
+      "line": "Feed {tags_line} {volume} kg\n"
+    }
+  },
   "language": {
     "pick": "\uD83D\uDC47 Pick your native language",
     "invalid": "❌ Seems that you entered an invalid language. Please tap the language button",
     "picked": "✅ Language selected, now press /start to return to the menu"
   },
   "start_command": {
-    "first": "👋🏻 Hello! Let's get acquainted, what's your name?",
-    "second": "📝 Hello! This is the menu"
+    "first": "👋🏻 Hi! Let's get acquainted, what's your name?",
+    "second": "📝 Hi! This is the menu"
   },
   "registration": {
     "name": {
       "chosen": "✨ Great, {0}, now enter your phone number",
-      "invalid": "❌ It looks like you entered your name in the wrong format. Try again"
+      "invalid": "❌ It seems that you entered your name in an incorrect format. Try again"
     },
     "phone": {
-      "chosen": "✨ Cool, now enter your email",
-      "invalid": "❌ It looks like you entered your number in the wrong format. Try again"
+      "chosen": "✨ Cool, now enter your district. Here is the list of districts:\n",
+      "invalid": "❌ It seems that you entered your phone number in an incorrect format. Try again"
+    },
+    "district": {
+      "chosen": "Well done, now enter your email",
+      "invalid": "❌ It seems that you entered your district in an incorrect format. Try again\nHere is the list of districts:\n"
     },
     "email": {
-      "chosen": "✨ Okay, now send your avatar",
-      "invalid": "❌ It looks like you entered your email in the wrong format. Try again"
+      "chosen": "✨ Good, now send your avatar",
+      "invalid": "❌ It seems that you entered your email in an incorrect format. Try again"
     },
     "image": {
-      "chosen": "\uD83D\uDD25 Cool, the registration is complete. Here are your entered details: \n\nName: {0}\nPhone number: {1}\nEmail: {2} \nAvatar: {3}",
-      "invalid": "❌ It looks like you sent your avatar in the wrong format. Try again"
+      "chosen": "\uD83D\uDD25 Cool, the registration is complete.\n",
+      "invalid": "❌ It seems that you sent your avatar in an incorrect format. Try again"
     }
+  },
+  "edit_profile": {
+    "info": "\uD83D\uDC47 Choose what you want to change",
+    "back": "↩️ Back",
+    "options": [
+      {
+        "type": "name",
+        "button_text": "\uD83D\uDCDD Name",
+        "text": "✏️ Enter your name",
+        "correct": "✅ Name changed",
+        "invalid": "❌ It seems that you entered your name in an incorrect format. Try again"
+      },
+      {
+        "type": "email",
+        "button_text": "✉\uFE0F Email",
+        "text": "✏️ Enter your email",
+        "correct": "✅ Email changed",
+        "invalid": "❌ It seems that you entered your email in an incorrect format. Try again"
+      },
+      {
+        "type": "phone",
+        "button_text": "\"\\uD83D\\uDCDE Phone number\"",
+        "text": "✏\uFE0F Enter your phone number",
+        "correct": "✅ Phone number changed",
+        "invalid": "❌ It seems that you entered your phone number in an incorrect format. Try again"
+      },
+      {
+        "type": "image",
+        "button_text": "\uD83D\uDDBC Avatar",
+        "text": "✏\uFE0F Send your avatar",
+        "correct": "✅ Avatar changed",
+        "invalid": "❌ It seems that you sent your avatar in an incorrect format. Try again"
+      }
+    ]
+  },
+  "point": {
+    "menu": "Select the required action",
+    "points_list": "Select a point from the list:\n\n",
+    "points_item": "{ind}) [{district}] {name} - {address}\n",
+    "select": {
+      "invalid": "<b>It seems you entered an incorrect number</b>\n"
+    },
+    "tags": "Select what you took\n",
+    "number": {
+      "text": "Enter the feed weight in kg",
+      "invalid": "<b>It seems you entered a non-number</b>\n\n"
+    },
+    "inventory": {
+      "text": "Slot: \n",
+      "item": "feed {name} - {volume} kg\n"
+    },
+    "map": "Map available at [link]({url})",
+    "files": "<b>Send a photo confirmation (one file at a time)</b>\n",
+    "files_final": "<b>Send a photo of the agreement</b>\n"
+  },
+  "share": {
+    "tg_id": {
+      "start": "Enter the ID of the user you want to share with",
+      "invalid": "<b>It seems you made a mistake, try again</b>"
+    },
+    "tags": "Select what you are transferring\n",
+    "to_user": "Recipient: {id}\n\n",
+    "inventory": {
+      "invalid": "<b>The transfer value exceeded your balance, it was deleted</b>\n"
+    },
+    "success": "Transfer completed successfully",
+    "error": "An unexpected error occurred, please try to transfer again"
+  },
+  "usage": {
+    "district": {
+      "enter": "Write the district from the list you are currently in.\n",
+      "invalid": "<b>It seems you made a mistake. Try again</b>\n"
+    },
+    "tags": "Select what you used\n"
   },
   "skip_button": "❌ Skip",
   "return_to_menu": "🔙 Press /start to return to the menu",

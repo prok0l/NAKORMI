@@ -1,32 +1,121 @@
 {
+  "tg_id": "Votre Id - {0}\nPour redémarrer, appuyez sur /start",
+  "main": {
+    "info": "Voici vos informations : \n\nVotre Id : <code>{id}</code>\nVotre nom : {name}\nVotre téléphone : {phone}\nVotre email : {email}\nVotre rôle : {role}\nVotre district : {district}",
+    "not_specified": "Non spécifié",
+    "admin": "Admin",
+    "volunteer": "Volontaire",
+    "inventory": {
+      "text": "\n\nVotre inventaire :\n",
+      "line": "Nourriture {tags_line} {volume} kg\n"
+    }
+  },
   "language": {
     "pick": "\uD83D\uDC47 Pick your native language",
     "invalid": "❌ Seems that you entered an invalid language. Please tap the language button",
-    "picked": "✅ Langue sélectionnée, maintenant appuyez sur /start pour revenir au menu"
+    "picked": "✅ Langue choisie, appuyez maintenant sur /start pour revenir au menu"
   },
   "start_command": {
-    "first": "👋🏻 Bonjour! Faisons connaissance, comment t'appelles-tu?",
+    "first": "👋🏻 Bonjour! Commençons par faire connaissance, comment vous appelez-vous?",
     "second": "📝 Bonjour! Voici le menu"
   },
   "registration": {
     "name": {
-      "chosen": "✨ Super, {0}, maintenant entre ton numéro de téléphone",
-      "invalid": "❌ Il semble que tu aies entré ton nom dans un format incorrect. Essaie encore"
+      "chosen": "✨ Parfait, {0}, maintenant entrez votre numéro de téléphone",
+      "invalid": "❌ Il semble que vous avez entré votre nom dans un format incorrect. Veuillez réessayer"
     },
     "phone": {
-      "chosen": "✨ Cool, maintenant entre ton email",
-      "invalid": "❌ Il semble que tu aies entré ton numéro dans un format incorrect. Essaie encore"
+      "chosen": "✨ Super, maintenant entrez votre district. Voici la liste des districts :\n",
+      "invalid": "❌ Il semble que vous avez entré votre numéro de téléphone dans un format incorrect. Veuillez réessayer"
+    },
+    "district": {
+      "chosen": "Bien joué, maintenant entrez votre email",
+      "invalid": "❌ Il semble que vous avez entré votre district dans un format incorrect. Veuillez réessayer\nVoici la liste des districts :\n"
     },
     "email": {
-      "chosen": "✨ D'accord, maintenant envoie ton avatar",
-      "invalid": "❌ Il semble que tu aies entré ton email dans un format incorrect. Essaie encore"
+      "chosen": "✨ Bien, maintenant envoyez votre avatar",
+      "invalid": "❌ Il semble que vous avez entré votre email dans un format incorrect. Veuillez réessayer"
     },
     "image": {
-      "chosen": "\uD83D\uDD25 Super, l'inscription est terminée. Voici les informations que tu as saisies : \n\nNom : {0}\nNuméro de téléphone : {1}\nEmail : {2} \nAvatar : {3}",
-      "invalid": "❌ Il semble que tu aies envoyé ton avatar dans un format incorrect. Essaie encore"
+      "chosen": "\uD83D\uDD25 Super, l'enregistrement est terminé.\n",
+      "invalid": "❌ Il semble que vous avez envoyé votre avatar dans un format incorrect. Veuillez réessayer"
     }
   },
+  "edit_profile": {
+    "info": "\uD83D\uDC47 Sélectionnez ce que vous souhaitez modifier",
+    "back": "↩️ Retour",
+    "options": [
+      {
+        "type": "name",
+        "button_text": "\uD83D\uDCDD Nom",
+        "text": "✏️ Entrez votre nom",
+        "correct": "✅ Nom modifié",
+        "invalid": "❌ Il semble que vous avez entré votre nom dans un format incorrect. Veuillez réessayer"
+      },
+      {
+        "type": "email",
+        "button_text": "✉\uFE0F Email",
+        "text": "✏️ Entrez votre email",
+        "correct": "✅ Email modifié",
+        "invalid": "❌ Il semble que vous avez entré votre email dans un format incorrect. Veuillez réessayer"
+      },
+      {
+        "type": "phone",
+        "button_text": "\"\\uD83D\\uDCDE Numéro de téléphone\"",
+        "text": "✏\uFE0F Entrez votre numéro de téléphone",
+        "correct": "✅ Numéro de téléphone modifié",
+        "invalid": "❌ Il semble que vous avez entré votre numéro de téléphone dans un format incorrect. Veuillez réessayer"
+      },
+      {
+        "type": "image",
+        "button_text": "\uD83D\uDDBC Avatar",
+        "text": "✏\uFE0F Envoyez votre avatar",
+        "correct": "✅ Avatar modifié",
+        "invalid": "❌ Il semble que vous avez envoyé votre avatar dans un format incorrect. Veuillez réessayer"
+      }
+    ]
+  },
+  "point": {
+    "menu": "Sélectionnez l'action nécessaire",
+    "points_list": "Sélectionnez un point de la liste :\n\n",
+    "points_item": "{ind}) [{district}] {name} - {address}\n",
+    "select": {
+      "invalid": "<b>Il semble que vous avez entré un mauvais numéro</b>\n"
+    },
+    "tags": "Sélectionnez ce que vous avez pris\n",
+    "number": {
+      "text": "Entrez le poids de la nourriture en kg",
+      "invalid": "<b>Il semble que vous avez entré un nombre incorrect</b>\n\n"
+    },
+    "inventory": {
+      "text": "Emplacement : \n",
+      "item": "nourriture {name} - {volume} kg\n"
+    },
+    "map": "La carte est disponible via [ce lien]({url})",
+    "files": "<b>Envoyez une photo de confirmation (un fichier à la fois)</b>\n",
+    "files_final": "<b>Envoyez une photo du contrat</b>\n"
+  },
+  "share": {
+    "tg_id": {
+      "start": "Entrez l'ID de l'utilisateur avec qui vous souhaitez partager",
+      "invalid": "<b>Il semble que vous avez fait une erreur, veuillez réessayer</b>"
+    },
+    "tags": "Sélectionnez ce que vous transférez\n",
+    "to_user": "Destinataire : {id}\n\n",
+    "inventory": {
+      "invalid": "<b>La valeur du transfert a dépassé votre solde, elle a été supprimée</b>\n"
+    },
+    "success": "Le transfert a été effectué avec succès",
+    "error": "Une erreur imprévue s'est produite, veuillez essayer de transférer à nouveau"
+  },
+  "usage": {
+    "district": {
+      "enter": "Écrivez le district de la liste dans lequel vous vous trouvez actuellement.\n",
+      "invalid": "<b>Il semble que vous avez fait une erreur. Veuillez réessayer</b>\n"
+    },
+    "tags": "Sélectionnez ce que vous avez utilisé\n"
+  },
   "skip_button": "❌ Passer",
-  "return_to_menu": "🔙 Appuie sur /start pour revenir au menu",
-  "undefined_command": "😔 Je ne te comprends pas, utilise la commande /start pour revenir au menu"
+  "return_to_menu": "🔙 Appuyez sur /start pour revenir au menu",
+  "undefined_command": "😔 Je ne vous comprends pas, utilisez la commande /start pour revenir au menu"
 }
