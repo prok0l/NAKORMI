@@ -125,6 +125,6 @@ class UsageFeedView(APIView):
 
         report_action_serializer = ReportActionSerializer(data=request.data)
         report_action_serializer.is_valid(raise_exception=True)
-        report_action_serializer.save()
+        obj = report_action_serializer.save()
 
-        return JsonResponse({"success": True}, status=status.HTTP_200_OK)
+        return JsonResponse({"id": obj.pk}, status=status.HTTP_200_OK)

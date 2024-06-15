@@ -35,14 +35,16 @@ async def start_command_handler(message: Message,
 
         await bot.edit_message_text(phrases['start_command']['second'],
                                     chat_id=core_message.chat_id,
-                                    message_id=core_message.message_id)
+                                    message_id=core_message.message_id,
+                                    parse_mode='HTML')
 
         return
 
     if not context.language_defined():
         keyboard = make_language_keyboard()
         new_message = await message.answer(phrases['language']['pick'],
-                                           reply_markup=keyboard.as_markup())
+                                           reply_markup=keyboard.as_markup(),
+                                           parse_mode='HTML')
 
         core_message = CoreMessage(chat_id=new_message.chat.id,
                                    message_id=new_message.message_id,
@@ -67,13 +69,15 @@ async def start_command_handler(message: Message,
         await bot.edit_message_text(represent_user(user=user, inventory=inventory, phrase=phrases),
                                     chat_id=core_message.chat_id,
                                     message_id=core_message.message_id,
-                                    reply_markup=keyboard.as_markup()
+                                    reply_markup=keyboard.as_markup(),
+                                    parse_mode='HTML'
                                     )
         return
 
     await bot.edit_message_text(chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
-                                text=phrases['start_command']['first'])
+                                text=phrases['start_command']['first'],
+                                parse_mode='HTML')
 
     await state.set_state(RegistrationState.waiting_for_name)
 
@@ -93,7 +97,8 @@ async def language_chosen(callback: CallbackQuery,
     await bot.edit_message_text(phrases['language']['picked'],
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
-                                reply_markup=None)
+                                reply_markup=None,
+                                parse_mode='HTML')
 
     await state.set_state(None)
 
@@ -110,6 +115,7 @@ async def language_chosen_invalid(message: Message,
     await bot.edit_message_text(phrases['language']['invalid'],
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
-                                reply_markup=keyboard.as_markup())
+                                reply_markup=keyboard.as_markup(),
+                                parse_mode='HTML')
 
     await state.set_state(RegistrationState.waiting_for_language)

@@ -41,7 +41,8 @@ async def complete_registration(state: FSMContext,
     await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
-                                reply_markup=keyboard.as_markup()
+                                reply_markup=keyboard.as_markup(),
+                                parse_mode='HTML'
                                 )
 
     await state.set_state(None)
@@ -82,4 +83,5 @@ async def image_chosen_invalid_handler(message: Message,
 
     await bot.edit_message_text(phrases['registration']['image']['invalid'],
                                 chat_id=core_message.chat_id,
-                                message_id=core_message.message_id)
+                                message_id=core_message.message_id,
+                                parse_mode='HTML')

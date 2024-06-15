@@ -22,11 +22,12 @@ async def undefined_command_handler(message: Message,
 
         await bot.edit_message_text(phrases['undefined_command'],
                                     chat_id=core_message.chat_id,
-                                    message_id=core_message.message_id)
+                                    message_id=core_message.message_id,
+                                    parse_mode='HTML')
 
         return
 
-    new_message = await message.answer(phrases['undefined_command'])
+    new_message = await message.answer(phrases['undefined_command'], parse_mode='HTML')
 
     core_message = CoreMessage(chat_id=new_message.chat.id,
                                message_id=new_message.message_id,

@@ -69,3 +69,13 @@ class UserService(BaseService):
             response = await client.post(f'{self.address}/share_feed/',
                                          headers=headers, json=body)
             return response.status_code == 200, response.json()
+
+    async def usage_feed(self, from_user: int, content: dict, district: int):
+        headers = self.headers
+        headers['Tg-Id'] = str(from_user)
+
+        async with httpx.AsyncClient() as client:
+            body = {"content": content, "action": 3, "from_user": from_user, "district": district}
+            response = await client.post(f'{self.address}/usage_feed/',
+                                         headers=headers, json=body)
+            return response.status_code == 200, response.json()

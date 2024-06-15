@@ -9,6 +9,7 @@ from handlers import undefined_command
 from handlers.registration import name_chosen, phone_chosen, email_chosen, image_chosen, district_chosen
 from handlers.points import menu
 from handlers.share_feed import share
+from handlers.usage import usage
 from middlewares.language_middleware import LanguageMiddleware
 from services.api.backend import Backend
 
@@ -36,7 +37,8 @@ async def run_app(bot_token: str, api_key: str, api_address: str):
                        email_chosen.router,
                        image_chosen.router,
                        menu.router,
-                       share.router
+                       share.router,
+                       usage.router
                        )
 
     dp.include_router(undefined_command.router)

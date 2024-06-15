@@ -28,7 +28,8 @@ async def name_chosen_handler(message: Message,
 
     await bot.edit_message_text(phrases['registration']['name']['chosen'].format(name),
                                 chat_id=core_message.chat_id,
-                                message_id=core_message.message_id)
+                                message_id=core_message.message_id,
+                                parse_mode='HTML')
 
     await state.set_state(RegistrationState.waiting_for_phone)
 
@@ -43,4 +44,5 @@ async def name_chosen_invalid_handler(message: Message,
 
     await bot.edit_message_text(phrases['registration']['name']['invalid'],
                                 chat_id=core_message.chat_id,
-                                message_id=core_message.message_id)
+                                message_id=core_message.message_id,
+                                parse_mode='HTML')

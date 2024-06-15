@@ -1,4 +1,3 @@
-import asyncio
 from string import digits
 
 from aiogram import Router, F, Bot
@@ -9,55 +8,65 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from functional.core_context import CoreContext
 from functional.phrases import Phrases
 from handlers.points.menu import to_main_handler
-from keyboards.feed_keyboard import is_done_keyboard, is_done_photos_keyboard
+from handlers.usage.state.usage import UsageState
 from services.api.backend import Backend
+from keyboards.usage_keyboard import is_done_keyboard, is_done_photos_keyboard
 
-from handlers.share_feed.state.share import ShareState
-
-router = Router(name='share')
+router = Router(name='usage')
 
 
-@router.callback_query(F.data.startswith('share_feed'))
-async def share_feed_handler(callback_query: CallbackQuery,
-                             state: FSMContext,
-                             context: CoreContext,
-                             phrases: Phrases,
-                             bot: Bot,
-                             backend: Backend):
+@router.callback_query(F.data.startswith('usage_start'))
+async def usage_handler(callback_query: CallbackQuery,
+                        state: FSMContext,
+                        context: CoreContext,
+                        phrases: Phrases,
+                        bot: Bot,
+                        backend: Backend):
     core_message = context.get_message()
 
-    await bot.edit_message_text(phrases['share']['tg_id']['start'],
-                                chat_id=core_message.chat_id,
-                                message_id=core_message.message_id)
-    await state.set_state(ShareState.waiting_for_tg_id)
     inventory = await backend.users.inventory(user_id=core_message.telegram_id)
-
-    await state.update_data(file_ids=[])
-    await state.update_data(inventory=inventory)
     await state.update_data(tags=[])
     await state.update_data(content=[])
     await state.update_data(tags_values=[])
-    await state.update_data(point=None)
-
-
-@router.message(ShareState.waiting_for_tg_id)
-async def input_tg_id_handler(message: Message,
-                              state: FSMContext,
-                              context: CoreContext,
-                              bot: Bot,
-                              phrases: Phrases,
-                              backend: Backend):
+    await state.update_data(file_ids=[])
+    await state.update_data(inventory=inventory)
+    await state.update_data(district_id=None)
     core_message = context.get_message()
-    id = message.text
-    if not set(id) <= set(digits) or not await backend.users.check(user_id=core_message.telegram_id, searched_user=id):
-        await bot.edit_message_text(phrases['share']['tg_id']['invalid'],
+
+    districts = await backend.main.get_districts(user_id=core_message.telegram_id)
+    msg_text = phrases['usage']['district']['enter'] + ', '.join([x['name'] for x in districts])
+
+    await state.update_data(districts=districts)
+    await bot.edit_message_text(msg_text,
+                                chat_id=core_message.chat_id,
+                                message_id=core_message.message_id,
+                                parse_mode='HTML')
+    await state.set_state(UsageState.waiting_for_district)
+
+
+@router.message(UsageState.waiting_for_district)
+async def district_handler(message: Message,
+                           state: FSMContext,
+                           context: CoreContext,
+                           phrases: Phrases,
+                           bot: Bot,
+                           backend: Backend):
+    core_message = context.get_message()
+
+    data = await state.get_data()
+
+    text = message.text
+    if text not in [x['name'] for x in data.get('districts')]:
+        msg_text = (phrases['usage']['district']['invalid'] + phrases['usage']['district']['enter'] +
+                    ', '.join([x['name'] for x in data.get('districts', [])]))
+
+        await bot.edit_message_text(msg_text,
                                     chat_id=core_message.chat_id,
                                     message_id=core_message.message_id,
                                     parse_mode='HTML')
         return
-
-    await state.update_data(to_user=int(id))
-    await state.set_state(ShareState.waiting_for_tags)
+    district = [x for x in data.get('districts') if x['name'] == text][0]
+    await state.update_data(district_id=district['id'])
 
     tags = await backend.feed.tags(user_id=core_message.telegram_id, level=1)
 
@@ -67,16 +76,18 @@ async def input_tg_id_handler(message: Message,
         keyboard.row(InlineKeyboardButton(text=item.name,
                                           callback_data=str(item.id)))
 
-    await bot.edit_message_text(phrases['share']['to_user'].format(id=id) + phrases['share']['tags'],
+    msg_text = phrases['usage']['tags']
+    await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
                                 reply_markup=keyboard.as_markup(),
                                 parse_mode='HTML')
+    await state.set_state(UsageState.waiting_for_tags)
     await state.update_data(tags=[])
     await state.update_data(tags_values=[])
 
 
-@router.callback_query(ShareState.waiting_for_tags)
+@router.callback_query(UsageState.waiting_for_tags)
 async def tags_handler(callback_query: CallbackQuery,
                        state: FSMContext,
                        context: CoreContext,
@@ -96,7 +107,7 @@ async def tags_handler(callback_query: CallbackQuery,
     await state.update_data(tag_db=tags)
 
     if not tags:
-        await state.set_state(ShareState.waiting_for_volume)
+        await state.set_state(UsageState.waiting_for_volume)
         await bot.edit_message_text(phrases['point']['number']['text'],
                                     chat_id=core_message.chat_id,
                                     message_id=core_message.message_id,
@@ -113,7 +124,7 @@ async def tags_handler(callback_query: CallbackQuery,
                                         reply_markup=keyboard.as_markup())
 
 
-@router.message(ShareState.waiting_for_volume)
+@router.message(UsageState.waiting_for_volume)
 async def volume_handler(message: Message,
                          state: FSMContext,
                          context: CoreContext,
@@ -158,7 +169,6 @@ async def volume_handler(message: Message,
     msg_text = phrases['point']['files']
     if len(content_filtered) != len(content):
         msg_text += phrases['share']['inventory']['invalid']
-        msg_text += phrases['share']['to_user'].format(id=data['to_user'])
         if content:
             msg_text += phrases['point']['inventory']['text']
             for item in content_filtered:
@@ -175,25 +185,25 @@ async def volume_handler(message: Message,
 
     content = content_filtered
     await state.update_data(content=content)
-    msg_text += phrases['share']['to_user'].format(id=data['to_user'])
+
     if content:
         msg_text += phrases['point']['inventory']['text']
-
-    for item in content:
-        msg_text += phrases['point']['inventory']['item'].format(
-            name=" ".join(item['tags_values']), volume=str(item['volume']))
+        for item in content:
+            msg_text += phrases['point']['inventory']['item'].format(
+                name=" ".join(item['tags_values']), volume=str(item['volume']))
 
     keyboard = is_done_photos_keyboard()
+
     await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
                                 reply_markup=keyboard.as_markup(),
                                 parse_mode='HTML')
-    await state.set_state(ShareState.waiting_for_photo)
+    await state.set_state(UsageState.waiting_for_photo)
 
 
-@router.callback_query(F.data.startswith('stop_photo_feed'))
-async def feed_stop_photo_handler(callback_query: CallbackQuery,
+@router.callback_query(F.data.startswith('stop_photo_usage'))
+async def usage_stop_photo_handler(callback_query: CallbackQuery,
                                   state: FSMContext,
                                   context: CoreContext,
                                   phrases: Phrases,
@@ -203,7 +213,7 @@ async def feed_stop_photo_handler(callback_query: CallbackQuery,
     data = await state.get_data()
     content = data.get('content', [])
 
-    msg_text = phrases['share']['to_user'].format(id=data['to_user']) + phrases['point']['inventory']['text']
+    msg_text = phrases['point']['inventory']['text']
 
     for item in content:
         msg_text += phrases['point']['inventory']['item'].format(
@@ -221,7 +231,7 @@ async def feed_stop_photo_handler(callback_query: CallbackQuery,
         await state.update_data(content=content)
 
 
-@router.message(ShareState.waiting_for_photo, F.photo)
+@router.message(UsageState.waiting_for_photo, F.photo)
 async def photo_handler(message: Message,
                         state: FSMContext,
                         context: CoreContext,
@@ -230,7 +240,7 @@ async def photo_handler(message: Message,
                         backend: Backend):
     core_message = context.get_message()
     data = await state.get_data()
-    file_ids = data['file_ids']
+    file_ids = data.get('file_ids', [])
     obj = message.photo[-1]
     file = await message.bot.download(file=obj.file_id, destination="images\\file.png")
     with open("images\\file.png", "rb") as f:
@@ -239,7 +249,7 @@ async def photo_handler(message: Message,
     await state.update_data(file_ids=file_ids)
 
 
-@router.callback_query(F.data.startswith('again_share'))
+@router.callback_query(F.data.startswith('again_usage'))
 async def again_handler(callback_query: CallbackQuery,
                         state: FSMContext,
                         context: CoreContext,
@@ -252,8 +262,7 @@ async def again_handler(callback_query: CallbackQuery,
     await state.update_data(tags=[])
     await state.update_data(tags_values=[])
 
-    msg_text = (phrases['share']['to_user'].format(id=data['to_user']) +
-                phrases['share']['tags'] + phrases['point']['inventory']['text'])
+    msg_text = (phrases['share']['tags'] + phrases['point']['inventory']['text'])
 
     for item in data['content']:
         msg_text += phrases['point']['inventory']['item'].format(
@@ -266,7 +275,7 @@ async def again_handler(callback_query: CallbackQuery,
         keyboard.row(InlineKeyboardButton(text=item.name,
                                           callback_data=str(item.id)))
 
-    await state.set_state(ShareState.waiting_for_tags)
+    await state.set_state(UsageState.waiting_for_tags)
 
     await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,
@@ -275,7 +284,7 @@ async def again_handler(callback_query: CallbackQuery,
                                 parse_mode='HTML')
 
 
-@router.callback_query(F.data.startswith('stop_share'))
+@router.callback_query(F.data.startswith('stop_usage'))
 async def stop_handler(callback_query: CallbackQuery,
                        state: FSMContext,
                        context: CoreContext,
@@ -287,13 +296,13 @@ async def stop_handler(callback_query: CallbackQuery,
     data = await state.get_data()
     content = data.get('content')
     from_user = core_message.telegram_id
-    to_user = data['to_user']
+    district = data.get('district_id')
 
-    status, res = await backend.users.share_feed(content=content, from_user=from_user, to_user=to_user)
+    status, res = await backend.users.usage_feed(content=content, from_user=from_user, district=district)
 
     await state.update_data(report_id=res['id'])
 
-    msg_text = (phrases['point']['files_final'] + phrases['share']['to_user'].format(id=data['to_user']) +
+    msg_text = (phrases['point']['files_final'] +
                 phrases['share']['tags'] + phrases['point']['inventory']['text'])
 
     for item in data['content']:
@@ -304,10 +313,11 @@ async def stop_handler(callback_query: CallbackQuery,
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
                                 parse_mode='HTML')
-    await state.set_state(ShareState.waiting_for_document)
+    await state.set_state(UsageState.waiting_for_document)
 
 
-@router.message(ShareState.waiting_for_document, F.photo)
+
+@router.message(UsageState.waiting_for_document, F.photo)
 async def document_handler(message: Message,
                            state: FSMContext,
                            context: CoreContext,
@@ -328,3 +338,4 @@ async def document_handler(message: Message,
     await state.set_state(None)
     await to_main_handler(callback_query=None, state=state,
                           context=context, phrases=phrases, bot=bot, backend=backend)
+

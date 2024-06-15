@@ -37,7 +37,8 @@ async def phone_chosen_handler(message: Message,
 
     await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,
-                                message_id=core_message.message_id)
+                                message_id=core_message.message_id,
+                                parse_mode='HTML')
 
     await state.set_state(RegistrationState.waiting_for_district)
 
@@ -52,4 +53,5 @@ async def phone_chosen_invalid_handler(message: Message,
 
     await bot.edit_message_text(phrases['registration']['phone']['invalid'],
                                 chat_id=core_message.chat_id,
-                                message_id=core_message.message_id)
+                                message_id=core_message.message_id,
+                                parse_mode='HTML')

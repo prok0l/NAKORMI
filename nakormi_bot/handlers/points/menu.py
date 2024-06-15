@@ -34,7 +34,8 @@ async def point_menu_handler(callback_query: CallbackQuery,
     await bot.edit_message_text(phrases['point']['menu'],
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
-                                reply_markup=keyboard.as_markup())
+                                reply_markup=keyboard.as_markup(),
+                                parse_mode='HTML')
     await state.set_state(PointState.waiting_for_action)
 
 
@@ -51,7 +52,8 @@ async def view_map_handler(callback_query: CallbackQuery,
     await bot.edit_message_text(phrases['point']['map'].format(url=backend.points.map),
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
-                                reply_markup=keyboard.as_markup())
+                                reply_markup=keyboard.as_markup(),
+                                parse_mode='HTML')
 
 
 @router.callback_query(F.data.startswith('menu'))
@@ -69,8 +71,8 @@ async def to_main_handler(callback_query: CallbackQuery,
     await bot.edit_message_text(represent_user(user=user, inventory=inventory, phrase=phrases),
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
-                                reply_markup=keyboard.as_markup()
-                                )
+                                reply_markup=keyboard.as_markup(),
+                                parse_mode='HTML')
     return
 
 
@@ -88,7 +90,8 @@ async def take_feed_handler(callback_query: CallbackQuery,
     msg_text = phrases['point']['points_list'] + represent_points(points=points, phrase=phrases)
     await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,
-                                message_id=core_message.message_id)
+                                message_id=core_message.message_id,
+                                parse_mode='HTML')
     await state.set_state(PointState.waiting_for_point_num)
     await state.update_data(tags=[])
     await state.update_data(content=[])
@@ -114,7 +117,8 @@ async def select_point_handler(message: Message,
                     + represent_points(points=data.get('points'), phrase=phrases))
         await bot.edit_message_text(msg_text,
                                     chat_id=core_message.chat_id,
-                                    message_id=core_message.message_id)
+                                    message_id=core_message.message_id,
+                                    parse_mode='HTML')
         return
 
     point = data['points'][num - 1]
@@ -130,7 +134,8 @@ async def select_point_handler(message: Message,
     await bot.edit_message_text(phrases['point']['tags'],
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
-                                reply_markup=keyboard.as_markup())
+                                reply_markup=keyboard.as_markup(),
+                                parse_mode='HTML')
 
     await state.set_state(PointState.waiting_for_tags)
     await state.update_data(tags=[])
@@ -160,7 +165,8 @@ async def tags_handler(callback_query: CallbackQuery,
         await state.set_state(PointState.waiting_for_volume)
         await bot.edit_message_text(phrases['point']['number']['text'],
                                     chat_id=core_message.chat_id,
-                                    message_id=core_message.message_id)
+                                    message_id=core_message.message_id,
+                                    parse_mode='HTML')
         return
 
     keyboard = InlineKeyboardBuilder()
@@ -192,7 +198,8 @@ async def volume_handler(message: Message,
                 msg_text += phrases['point']['inventory']['item'].format(name="".join(item.tags), volume=item.volume)
         await bot.edit_message_text(msg_text,
                                     chat_id=core_message.chat_id,
-                                    message_id=core_message.message_id)
+                                    message_id=core_message.message_id,
+                                    parse_mode='HTML')
         return
 
     content = data.get('content', [])
@@ -218,7 +225,8 @@ async def volume_handler(message: Message,
     await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
-                                reply_markup=keyboard.as_markup())
+                                reply_markup=keyboard.as_markup(),
+                                parse_mode='HTML')
     await state.set_state(PointState.waiting_for_photo)
 
 
@@ -243,7 +251,8 @@ async def point_stop_photo_handler(callback_query: CallbackQuery,
     await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
-                                reply_markup=keyboard.as_markup())
+                                reply_markup=keyboard.as_markup(),
+                                parse_mode='HTML')
     content[-1]['photo_list'] = data['file_ids']
     await state.update_data(content=content)
 
@@ -264,7 +273,6 @@ async def photo_handler(message: Message,
         file_id = await backend.main.upload(file=f, user_id=core_message.telegram_id)
         file_ids.append(file_id[0])
     await state.update_data(file_ids=file_ids)
-
 
 
 @router.callback_query(F.data.startswith('again_point'))
@@ -298,7 +306,8 @@ async def again_handler(callback_query: CallbackQuery,
     await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
-                                reply_markup=keyboard.as_markup())
+                                reply_markup=keyboard.as_markup(),
+                                parse_mode='HTML')
 
 
 @router.callback_query(F.data.startswith('stop_point'))
@@ -325,7 +334,8 @@ async def stop_handler(callback_query: CallbackQuery,
 
     await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,
-                                message_id=core_message.message_id)
+                                message_id=core_message.message_id,
+                                parse_mode='HTML')
     await state.set_state(PointState.waiting_for_document)
 
 

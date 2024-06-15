@@ -15,7 +15,7 @@ class TransferAdmin(admin.ModelAdmin):
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ('id','action', 'date', 'from_user', 'to_user', 'point')
+    list_display = ('id','action', 'date', 'from_user', 'to_user', 'point', 'district')
 
 @admin.register(ReportPhoto)
 class ReportPhotoAdmin(admin.ModelAdmin):

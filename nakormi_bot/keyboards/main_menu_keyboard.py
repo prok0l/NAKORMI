@@ -15,7 +15,7 @@ def main_menu_keyboard(user) -> InlineKeyboardBuilder:
                                      callback_data='share_feed'))
 
     builder.row(InlineKeyboardButton(text='Отчет о реализации',
-                                     callback_data='report_feed'))
+                                     callback_data='usage_start'))
 
     if user.is_admin:
         builder.row(InlineKeyboardButton(text='Админ панель',

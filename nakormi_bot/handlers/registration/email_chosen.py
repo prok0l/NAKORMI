@@ -19,7 +19,8 @@ async def proceed_to_image(state: FSMContext,
 
     await bot.edit_message_text(phrases['registration']['email']['chosen'],
                                 chat_id=core_message.chat_id,
-                                message_id=core_message.message_id)
+                                message_id=core_message.message_id,
+                                parse_mode='HTML')
 
     reply_markup = make_skip_keyboard('skip_image', phrases)
 
@@ -64,4 +65,5 @@ async def email_chosen_invalid_handler(message: Message,
 
     await bot.edit_message_text(phrases['registration']['email']['invalid'],
                                 chat_id=core_message.chat_id,
-                                message_id=core_message.message_id)
+                                message_id=core_message.message_id,
+                                parse_mode='HTML')
