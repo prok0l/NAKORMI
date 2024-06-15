@@ -1,6 +1,7 @@
 import datetime
 
 from django.db import models
+from django.urls import reverse
 
 from main.models import Photo, Action, District
 
@@ -19,6 +20,9 @@ class Report(models.Model):
                                 null=True)
     point = models.ForeignKey('point.Point', blank=True, on_delete=models.PROTECT, null=True)
     district = models.ForeignKey(District, on_delete=models.PROTECT, blank=True, null=True)
+
+    def get_transfer_url(self):
+        return reverse('Transfer Report', kwargs={'report': self.pk})
 
 
 class Transfer(models.Model):

@@ -8,7 +8,7 @@ from rest_framework_api_key.permissions import HasAPIKey
 from main.models import Photo
 from main.serializers import TgIdSerializer
 from .filters import TransferFilter, ReportFilter, TransferFilterSet, ReportFilterSet
-from .models import Tag, Report, Transfer, ReportPhoto
+from .models import Tag, Report, Transfer, ReportPhoto, TransferPhoto
 from .serializers import TagSerializer, ReportSerializer, TransferSerializer, ReportPhotoSerializer
 
 
@@ -110,6 +110,27 @@ class TransferPhotoView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, view
         user = TgIdSerializer(data=self.request.headers)
         user.is_valid(raise_exception=True)
 
-        queryset = ReportPhoto.objects.all()
+        queryset = TransferPhoto.objects.all()
         return queryset
+    def create(self, request, *args, **kwargs):
+        user = TgIdSerializer(data=self.request.headers)
+        user.is_valid()
+        report = Transfer.objects.get(pk=request.data.get('report'))
+        from_user = report.from_user
+        if user.validated_data.get('tg_id') == from_user and not (TransferPhoto.objects.filter(report=report)):
+            uploaded_files = self.request.FILES.getlist('photo')
+            photo_list = []
+            for file in uploaded_files:
+                photo = Photo.objects.create(photo=file)
+                photo.save()
+                photo_list.append(photo)
+            serializer = self.get_serializer(data={'transfer': request.data['report'], 'photo': photo_list})
+
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response({"error": "error"}, status=status.HTTP_400_BAD_REQUEST)
+
 

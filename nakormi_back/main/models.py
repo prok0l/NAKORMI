@@ -7,7 +7,6 @@ class Photo(models.Model):
     photo = models.ImageField(upload_to='images/')
 
     objects = models.Manager()
-
     def get_photo(self):
         return self.pk
 

@@ -42,3 +42,13 @@ class TgIdSerializer(serializers.Serializer):
         fields = ('tg_id', )
 
 
+class PhotoUploadSerializer(serializers.ModelSerializer):
+    photo_list = serializers.ListField(read_only=True)
+    class Meta:
+        model = Photo
+        fields = '__all__'
+        extra_kwargs = {'id': {'read_only':True}}
+
+
+    def to_representation(self, instance):
+        return instance.pk

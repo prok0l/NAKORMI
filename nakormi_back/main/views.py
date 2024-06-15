@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, viewsets, status
+from rest_framework.response import Response
 from rest_framework_api_key.permissions import HasAPIKey
 
 from .models import District, Photo
-from .serializers import DistrictSerializer, PhotoSerializer
+from .serializers import DistrictSerializer, PhotoSerializer, PhotoUploadSerializer
 from .permissions import IsAdminOrReadOnly
 
 from rest_framework import mixins, viewsets
@@ -30,3 +31,14 @@ class DistrictView(mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.Lis
 
 
 
+class UploadPhotoView(mixins.CreateModelMixin,viewsets.GenericViewSet):
+    serializer_class = PhotoUploadSerializer
+    queryset = Photo.objects.all()
+    def create(self, request, *args, **kwargs):
+        uploaded_files = self.request.FILES.getlist('photo')
+        photo_list = []
+        for file in uploaded_files:
+            photo = Photo.objects.create(photo=file)
+            photo.save()
+            photo_list.append(photo)
+        return Response([x.pk for x in photo_list], status=status.HTTP_201_CREATED)
