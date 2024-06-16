@@ -31,12 +31,17 @@ async def complete_registration(state: FSMContext,
                                       name=name,
                                       phone=phone,
                                       email=email,
-                                      photo='None',
+                                      image=None,
                                       district=district))
 
     user = await backend.users.get(user_id=core_message.telegram_id)
+    analytics = await backend.users.analytics(from_user=core_message.telegram_id)
+    inventory = await backend.users.inventory(user_id=core_message.telegram_id)
     keyboard = main_menu_keyboard(user)
-    msg_text = phrases['registration']['image']['chosen'] + represent_user(user=user, inventory=list(), phrase=phrases)
+    msg_text = phrases['registration']['image']['chosen'] + represent_user(user=user,
+                                                                           inventory=inventory,
+                                                                           phrase=phrases,
+                                                                           analytics=analytics)
     await bot.edit_message_text(msg_text,
                                 chat_id=core_message.chat_id,
                                 message_id=core_message.message_id,
@@ -60,7 +65,7 @@ async def image_chosen_handler(message: Message,
 
     obj = message.photo[-1]
     file = await message.bot.download(file=obj.file_id, destination="images\\avatar.png")
-    with open("images\\file.png", "rb") as f:
+    with open("images\\avatar.png", "rb") as f:
         file_id = await backend.users.upload_avatar(file=f, user_id=core_message.telegram_id)
 
     await complete_registration(state, context, phrases, bot, backend)
