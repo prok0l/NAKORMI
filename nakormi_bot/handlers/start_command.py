@@ -29,17 +29,6 @@ async def start_command_handler(message: Message,
     # TODO: но пока что можно оставить и так, чтобы не нагружать
     registered = 'registered' in data  #or backend.users.exists(message.from_user.id)
 
-    # Если предыдущее сообщение уже есть в диалоге
-    if context.message_exists() and registered:
-        core_message = context.get_message()
-
-        await bot.edit_message_text(phrases['start_command']['second'],
-                                    chat_id=core_message.chat_id,
-                                    message_id=core_message.message_id,
-                                    parse_mode='HTML')
-
-        return
-
     if not context.language_defined():
         keyboard = make_language_keyboard()
         new_message = await message.answer(phrases['language']['pick'],
@@ -57,8 +46,11 @@ async def start_command_handler(message: Message,
         return
 
     if not await backend.users.exists(message.chat.id):
-        return await bot.send_message(chat_id=message.chat.id,
-                                      text=phrases['tg_id'].format(message.chat.id))
+        return await bot.edit_message_text(phrases['tg_id'].format(message.chat.id),
+                                           chat_id=message.chat_id,
+                                           message_id=message.message_id,
+                                           parse_mode='HTML'
+                                        )
         return
 
     core_message = context.get_message()

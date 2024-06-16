@@ -1,5 +1,5 @@
 {
-  "tg_id": "Ваш Id - {0}\nДля перезапуска нажми /start",
+  "tg_id": "Ваш Id - <code>{0}</code>\nДля перезапуска нажми /start",
   "main": {
     "info": "Вот твои данные: \n\nВаш Id: <code>{id}</code>\nВаше имя: {name}\nВаш телефон: {phone}\nВаша почта: {email}\nВаша роль: {role}\nВаш округ: {district}",
     "not_specified": "Не указан",
