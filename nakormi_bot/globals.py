@@ -11,7 +11,7 @@ from handlers.edit_profile import edit_profile, edit_name, edit_email, edit_phon
 from handlers.points import menu
 from handlers.share_feed import share
 from handlers.usage import usage
-from handlers.admin import admin_main, admin_point
+from handlers.admin import admin_main, admin_point, admin_user, admin_stocks
 from handlers.admin.create_point import (admin_point_name, admin_point_address, admin_point_coords, admin_point_phone,
                                          admin_point_info, admin_point_district, admin_point_photo)
 from middlewares.language_middleware import LanguageMiddleware
@@ -56,7 +56,9 @@ async def run_app(bot_token: str, api_key: str, api_address: str):
                        admin_point_phone.router,
                        admin_point_info.router,
                        admin_point_district.router,
-                       admin_point_photo.router
+                       admin_point_photo.router,
+                       admin_user.router,
+                       admin_stocks.router
                        )
 
     dp.include_router(undefined_command.router)

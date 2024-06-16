@@ -103,6 +103,7 @@ async def del_num_handler(message: Message,
                                 reply_markup=reply_markup.as_markup(),
                                 parse_mode='HTML')
 
+
 @router.message(DelPointAdminState.waiting_for_num)
 async def invalid_del_num_validator(message: Message,
                     state: FSMContext,

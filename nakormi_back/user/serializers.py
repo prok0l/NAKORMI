@@ -64,3 +64,6 @@ class VolunteerReportSerializer(serializers.Serializer):
     summ_using_feed = serializers.IntegerField()
 
 
+class AddVolunteerSerializer(serializers.Serializer):
+    tg_id = serializers.IntegerField()
+    is_admin = serializers.BooleanField()

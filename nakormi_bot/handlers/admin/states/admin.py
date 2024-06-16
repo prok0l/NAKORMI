@@ -13,3 +13,12 @@ class PointAdminState(StatesGroup):
 
 class DelPointAdminState(StatesGroup):
     waiting_for_num = State()
+
+
+class AddUserAdminState(StatesGroup):
+    waiting_for_id = State()
+    waiting_for_is_admin = State()
+
+
+class StocksAdminState(StatesGroup):
+    waiting_for_district = State()

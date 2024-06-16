@@ -121,3 +121,22 @@ class UserService(BaseService):
                                         params={"tg_id": from_user})
 
             return Analytics(**response.json())
+
+    async def add_user(self, from_user: int, tg_id: int, is_admin: bool):
+        headers = self.headers
+        headers['Tg-Id'] = str(from_user)
+
+        async with httpx.AsyncClient() as client:
+            body = {"tg_id": tg_id, "is_admin": is_admin}
+            response = await client.post(f'{self.address}/add_volunteer/', headers=headers,
+                                        json=body)
+            return response.status_code == 200
+
+    async def get_district_analytics(self, from_user: int, district: str):
+        headers = self.headers
+        headers['Tg-Id'] = str(from_user)
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f'{self.address}/inventory/analytics/', headers=headers,
+                                        params={"district": district})
+            return response.json()

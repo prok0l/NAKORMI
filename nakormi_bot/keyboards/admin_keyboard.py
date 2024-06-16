@@ -36,3 +36,15 @@ def admin_point_photo() -> InlineKeyboardBuilder:
                                      callback_data='admin_point_skip_photo'))
 
     return builder
+
+
+def admin_user_is_admin() -> InlineKeyboardBuilder:
+    builder = InlineKeyboardBuilder()
+
+    builder.row(InlineKeyboardButton(text='Волонтер',
+                                     callback_data='admin_user_role_volunteer'))
+
+    builder.row(InlineKeyboardButton(text='Админ',
+                                     callback_data='admin_user_role_admin'))
+
+    return builder

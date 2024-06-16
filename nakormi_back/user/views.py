@@ -9,7 +9,8 @@ from feed.models import Transfer, Report
 from feed.serializers import ReportActionSerializer
 from main.serializers import TgIdSerializer
 from main.permissions import IsAdmin
-from .serializers import VolunteerSerializer, InventorySerializer, ShareFeedSerializer, UsageFeedSerializer
+from .serializers import VolunteerSerializer, InventorySerializer, ShareFeedSerializer, UsageFeedSerializer, \
+    AddVolunteerSerializer
 from .models import *
 from .filters import DistrictInventoryFilter
 
@@ -54,7 +55,6 @@ class InventoryAnalytics(mixins.ListModelMixin, mixins.RetrieveModelMixin, views
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-
         res = dict()
         for item in queryset:
             res[tuple(x.name for x in item.tags.all())] = \
@@ -184,3 +184,15 @@ class VolunteerReportView(APIView):
 
         return JsonResponse({'summ_take_feed': summ_take_feed, 'summ_share_feed': summ_share_feed,
                              'summ_using_feed': summ_using_feed}, safe=False, status=status.HTTP_200_OK)
+
+
+class AddVolunteer(APIView):
+    permission_classes = [HasAPIKey, IsAdmin]
+
+    def post(self, request, *args, **kwargs):
+        serializer = AddVolunteerSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        obj = Volunteer.objects.create(**serializer.data)
+        obj.save()
+
+        return JsonResponse({"id": obj.pk}, status=status.HTTP_200_OK)
